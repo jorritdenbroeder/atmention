@@ -1,0 +1,9 @@
+{
+  "strict": "global",
+  "globals": {
+    "angular": true
+  },
+  "node": true,
+  "browser": true,
+  "jasmine": true
+}

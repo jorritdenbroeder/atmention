@@ -130,6 +130,8 @@ function editorFactory(options) {
 
     displayValue = segments.map(function (s) { return s.display.text; }).join('');
     markupValue = segments.map(function (s) { return s.markup.text; }).join('');
+
+    return editor;
   }
 
   function getSegments() {

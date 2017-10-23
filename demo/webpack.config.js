@@ -4,9 +4,12 @@ let HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = () => {
   return {
-    entry: './index.js',
+    entry: {
+      app: './index.js',
+      styles: '../src/styles/index.scss'
+    },
     output: {
-      filename: 'app.js'
+      filename: '[name].js'
     },
     resolve: {
       extensions: ['.js', '.scss'],

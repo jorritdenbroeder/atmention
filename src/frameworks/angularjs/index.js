@@ -1,6 +1,6 @@
 'use strict';
 
-require('../../styles/index.scss');
+// require('../../styles/index.scss');
 
 require('./atmention.module');
 require('./input.component');

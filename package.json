@@ -6,13 +6,15 @@
     "start": "cd demo && webpack-dev-server --config webpack.config.js --progress",
     "build": "webpack",
     "test": "karma start --single-run",
-    "test-watch": "karma start"
+    "test-watch": "karma start",
+    "posttest": "[ $TRAVIS ] && (cat coverage/lcov.info | coveralls)"
   },
   "author": "Jorrit den Broeder <jorrit@parksound.nl>",
   "license": "ISC",
   "devDependencies": {
     "angular": "1.5.8",
     "angular-mocks": "1.5.8",
+    "coveralls": "^3.0.0",
     "css-loader": "^0.28.7",
     "html-loader": "^0.5.1",
     "html-webpack-plugin": "^2.30.1",

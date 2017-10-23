@@ -1,6 +1,6 @@
 'use strict';
 
-var lib = require('.');
+var lib = require('../src/lib');
 
 describe('Editor', function () {
 

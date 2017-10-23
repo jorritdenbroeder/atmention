@@ -1,3 +1,3 @@
 'use strict';
 
-angular.module('appModule', ['mentionModule']);
+angular.module('appModule', ['atmentionModule']);

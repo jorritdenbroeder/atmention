@@ -1,0 +1,32 @@
+atmention,
+.atmention {
+  display: block;
+  position: relative;
+
+  textarea {
+    box-sizing: border-box;
+    margin: 0;
+  }
+}
+
+.atmentionSuggestionsOverlay {
+  position: absolute;
+  top: 100px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border: 1px solid magenta;
+}
+
+.atmentionSuggestionList {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+.atmentionSuggestionListItem {
+  &:hover {
+    background: #f0f0f0;
+    cursor: pointer;
+  }
+}

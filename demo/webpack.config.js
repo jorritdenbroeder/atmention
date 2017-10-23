@@ -9,7 +9,7 @@ module.exports = () => {
       filename: 'app.js'
     },
     resolve: {
-      extensions: ['.js', '.css'],
+      extensions: ['.js', '.scss'],
     },
     module: {
       rules: [
@@ -23,6 +23,14 @@ module.exports = () => {
           test: /\.html$/,
           use: 'html-loader'
         },
+        {
+          test: /\.scss$/,
+          use: [
+            'style-loader',
+            'css-loader?sourceMap',
+            'sass-loader?sourceMap'
+          ]
+        },
       ]
     },
     plugins: [
@@ -33,7 +41,7 @@ module.exports = () => {
         template: path.resolve('./index.html')
       })
     ],
-    devtool: 'cheap-module-eval-source-map',
+    devtool: 'source-map', //'cheap-module-eval-source-map',
     devServer: {
       port: 8081,
       host: '0.0.0.0',

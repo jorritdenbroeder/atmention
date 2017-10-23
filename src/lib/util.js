@@ -21,5 +21,12 @@ var util = module.exports = {
 
   spliceString: function (str, start, end, insert) {
     return str.substring(0, start) + (insert || '') + str.substring(end);
+  },
+
+  createMarkup: function (pattern, display, id) {
+    var markup = pattern;
+    markup = markup.replace('__DISPLAY__', display);
+    markup = markup.replace('__ID__', id);
+    return markup;
   }
 };

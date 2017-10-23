@@ -1,4 +1,7 @@
 'use strict';
 
-require('./mention.module');
-require('./mention-input.component');
+require('../../styles/index.scss');
+
+require('./atmention.module');
+require('./input.component');
+require('./suggestions.component');

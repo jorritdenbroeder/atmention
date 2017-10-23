@@ -1,0 +1,7 @@
+<div class="atmention" style="height: 200px">
+  <textarea style="width: 100%; height: 100px"></textarea>
+  <atmention-suggestions class="atmentionSuggestionsOverlay" suggestions="$ctrl.suggestions" on-select="$ctrl.applySuggestion"></atmention-suggestions>
+</div>
+
+<textarea style="width: 100%; height: 100px">{{$ctrl.markup}}</textarea>
+<pre>Current selection: {{$ctrl.selectionStart}},{{$ctrl.selectionEnd}}</pre>

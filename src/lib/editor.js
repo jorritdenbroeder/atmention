@@ -9,6 +9,7 @@ editorFactory.defaultOptions = {
 function editorFactory(options) {
   var editor = {};
   var config = {};
+  var markupRegex;
 
   var displayValue = '';
   var markupValue = '';
@@ -24,11 +25,16 @@ function editorFactory(options) {
   editor.getSelectionRange = getSelectionRange;
   editor.setSelectionRange = setSelectionRange;
   editor.applyDisplayValue = applyDisplayValue;
+  editor.detectSearchQuery = detectSearchQuery;
+  editor.insertMarkup = insertMarkup;
 
   init();
 
   function init() {
-    config.regex = util.regexFromTemplate(options && options.pattern || editorFactory.defaultOptions.pattern);
+    // Configure with options
+    config.pattern = options && options.pattern || editorFactory.defaultOptions.pattern;
+
+    markupRegex = util.regexFromTemplate(config.pattern);
   }
 
   function debug() {
@@ -54,7 +60,7 @@ function editorFactory(options) {
 
     segments = [];
 
-    while ((match = config.regex.exec(markup))) {
+    while ((match = markupRegex.exec(markup))) {
       matchedMarkup = match[0];
       matchedDisplay = match[1];
       matchedId = match[2];
@@ -227,13 +233,56 @@ function editorFactory(options) {
       start: xValue ? xStart : iStart,
       end: xValue ? xEnd : iStart
     };
-    var deletedRange = mapRange(displayRange, 'display', 'markup');
-    markupValue = util.spliceString(markupValue, deletedRange.start, deletedRange.end, iValue);
+    var mappedRange = mapRange(displayRange, 'display', 'markup');
+    markupValue = util.spliceString(markupValue, mappedRange.start, mappedRange.end, iValue);
 
     // Update display value
     parseMarkup(markupValue);
 
     // Update selection range
+    selectionStart = start;
+    selectionEnd = end;
+  }
+
+  function detectSearchQuery(value, newSelectionStart, newSelectionEnd) {
+    var mentionRegex = new RegExp('@([A-Za-z0-9_]+)', 'g'); // e.g. matches with @user_name
+    var match;
+    var matchedText;
+    var query;
+    var queryInfo;
+
+    while (!queryInfo && (match = mentionRegex.exec(value))) {
+      matchedText = match[0]; // including @ prefix
+      query = match[1]; // capture group
+      if (newSelectionStart > match.index && newSelectionStart <= match.index + matchedText.length) {
+        queryInfo = {
+          matchedText: matchedText,
+          query: query,
+          start: match.index,
+          end: match.index + matchedText.length
+        };
+      }
+    }
+
+    return queryInfo;
+  }
+
+  /**
+   * Inserts markup at the current cursor position (in displayValue)
+   * @param data.id
+   * @param data.display
+   */
+  function insertMarkup (display, id, start, end) {
+    var markup = util.createMarkup(config.pattern, display, id);
+    var mappedRange = mapRange({ start: start, end: end }, 'display', 'markup');
+
+    // Insert into markup
+    markupValue = util.spliceString(markupValue, mappedRange.start, mappedRange.end, markup);
+
+    // Update display value
+    parseMarkup(markupValue);
+
+    // TODO Update selection range
     selectionStart = start;
     selectionEnd = end;
   }

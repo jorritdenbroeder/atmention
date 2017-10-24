@@ -1,5 +1,12 @@
 'use strict';
 
+var KEY = {
+  ENTER: 13,
+  ESCAPE: 27,
+  UP: 38,
+  DOWN: 40
+};
+
 angular.module('atmentionModule')
   .component('atmentionTextarea', {
     require: {
@@ -18,9 +25,11 @@ function InputController($element, $scope, $timeout, atmention) {
   var inputElement;
   var highlighterElement;
   var lastQuery;
+  var activeSuggestion;
 
   ctrl.markup = '';
   ctrl.suggestions = [];
+  ctrl.activeSuggestionIndex = -1;
   ctrl.segments = []; // for highlighter
   ctrl.$onInit = $onInit;
   ctrl.$onDestroy = $onDestroy;
@@ -51,13 +60,13 @@ function InputController($element, $scope, $timeout, atmention) {
     document.addEventListener('selectionchange', onSelectionChanged);
     inputElement.addEventListener('input', onInput);
     inputElement.addEventListener('scroll', onInputElementScrolled);
+    inputElement.addEventListener('keydown', onKeyDown);
+    inputElement.addEventListener('blur', onBlur);
 
     // Needed for Firefox to keep selection range in sync
     inputElement.addEventListener('select', onSelectionChanged);
     inputElement.addEventListener('keyup', onSelectionChanged);
     inputElement.addEventListener('mousedown', onSelectionChanged);
-
-
 
     // TODO
     // Reset on blur, to prevent range from being deleted on drop-from-outside (Firefox)
@@ -73,8 +82,10 @@ function InputController($element, $scope, $timeout, atmention) {
 
   function onSelectionChanged(evt) {
     editor.setSelectionRange(inputElement.selectionStart, inputElement.selectionEnd);
-    detectSearchQuery();
-    updateDebugInfo();
+    $scope.$evalAsync(function () {
+      detectSearchQuery();
+      updateDebugInfo();
+    });
   }
 
   function onInput(evt) {
@@ -83,17 +94,54 @@ function InputController($element, $scope, $timeout, atmention) {
     var end = evt.target.selectionEnd;
 
     editor.applyDisplayValue(text, start, end);
-    updateDisplay();
 
-    detectSearchQuery();
-
-    updateDebugInfo();
+    $scope.$evalAsync(function () {
+      updateDisplay();
+      detectSearchQuery();
+      updateDebugInfo();
+    });
   }
 
   function onInputElementScrolled(evt) {
     // Sync highlighter scroll position
     highlighterElement.scrollTop = inputElement.scrollTop;
     highlighterElement.scrollLeft = inputElement.scrollLeft;
+  }
+
+  function onKeyDown(evt) {
+    // Do nothing when there are no suggestions
+    if (!ctrl.suggestions || !ctrl.suggestions.length) {
+      return;
+    }
+
+    switch (evt.keyCode) {
+      case KEY.UP: {
+        evt.preventDefault();
+        $scope.$evalAsync(function () { moveActiveSuggestionIndex(-1); });
+        return;
+      }
+      case KEY.DOWN: {
+        evt.preventDefault();
+        $scope.$evalAsync(function () { moveActiveSuggestionIndex(+1); });
+        return;
+      }
+      case KEY.ENTER: {
+        evt.preventDefault();
+        $scope.$evalAsync(function () { applySuggestion(ctrl.activeSuggestion); });
+        return;
+      }
+      case KEY.ESCAPE: {
+        evt.preventDefault();
+        $scope.$evalAsync(clearSuggestions);
+        return;
+      }
+    }
+  }
+
+  function onBlur() {
+    // FIXME: solve without using a timeout
+    // Timeout to give clicking a sugggestion a chance to fire first
+    $timeout(clearSuggestions, 250);
   }
 
   // Scans for new @mention right before caret
@@ -107,21 +155,49 @@ function InputController($element, $scope, $timeout, atmention) {
   }
 
   function handleQueryChanged(queryInfo) {
-    if (!queryInfo.query) {
-      ctrl.suggestions = [];
+    if (!ctrl.searchHook) {
+      return;
     }
-    else if (ctrl.searchHook) {
+
+    if (!queryInfo.query) {
+      clearSuggestions();
+    }
+    else {
       ctrl.searchHook(queryInfo.query).then(function (searchResults) {
-        ctrl.suggestions = searchResults.map(function (searchResult) {
-          var suggestion = {
-            queryInfo: queryInfo,
-            searchResult: searchResult
-          };
-          return suggestion;
-        });
+        if (!searchResults) {
+          console.error('Search must return an array');
+          return;
+        }
+
+        if (!searchResults.length) {
+          clearSuggestions();
+        } else {
+          // Show suggestions
+          ctrl.suggestions = searchResults.map(function (searchResult) {
+            var suggestion = {
+              queryInfo: queryInfo,
+              searchResult: searchResult
+            };
+            return suggestion;
+          });
+          ctrl.activeSuggestionIndex = 0;
+          ctrl.activeSuggestion = ctrl.suggestions[0];
+        }
       });
     }
-    $scope.$evalAsync();
+  }
+
+  function moveActiveSuggestionIndex(direction) {
+    var index = ctrl.activeSuggestionIndex + direction;
+
+    if (index < 0) {
+      index = 0;
+    }
+    if (index > ctrl.suggestions.length - 1) {
+      index = ctrl.suggestions.length - 1;
+    }
+    ctrl.activeSuggestionIndex = index;
+    ctrl.activeSuggestion = ctrl.suggestions[index];
   }
 
   /**
@@ -133,13 +209,22 @@ function InputController($element, $scope, $timeout, atmention) {
    */
   function applySuggestion(suggestion) {
     editor.insertMarkup(suggestion.searchResult.display, suggestion.searchResult.id, suggestion.queryInfo.start, suggestion.queryInfo.end);
+    clearSuggestions();
     updateDisplay();
+    inputElement.focus();
+  }
+
+  function clearSuggestions() {
+    ctrl.suggestions = [];
+    ctrl.activeSuggestion = null;
+    ctrl.activeSuggestionIndex = -1;
   }
 
   function updateDisplay() {
     inputElement.value = editor.getDisplay();
     inputElement.selectionStart = editor.getSelectionRange().start;
     inputElement.selectionEnd = editor.getSelectionRange().end;
+
     ctrl.segments = editor.getSegments();
 
     if (ctrl.ngModel) {
@@ -148,11 +233,8 @@ function InputController($element, $scope, $timeout, atmention) {
   }
 
   function updateDebugInfo() {
-    $scope.$evalAsync(function () {
-      ctrl.markup = editor.getMarkup();
-      ctrl.selectionStart = '' + editor.getSelectionRange().start;
-      ctrl.selectionEnd = '' + editor.getSelectionRange().end;
-    });
+    ctrl.selectionStart = '' + editor.getSelectionRange().start;
+    ctrl.selectionEnd = '' + editor.getSelectionRange().end;
   }
 
 }

@@ -1,11 +1,14 @@
+$DEBUG_COLOR: magenta;
+$HIGHLIGHT_COLOR: rgb(0, 188, 212);
+
 atmention-textarea {
   display: block;
 }
 
 .atmention {
-  &Container {
+  &InputContainer {
     position: relative;
-    border: 1px solid magenta;
+    border: 1px solid $DEBUG_COLOR;
     height: 150px; /* TODO */
   }
 
@@ -33,28 +36,23 @@ atmention-textarea {
     pointer-events: none;
     white-space: pre-wrap;
     word-wrap: break-word;
-    left: 1px; top: 1px; font-weight: bold; /* TODO temporary, for debugging */
 
     span {
       white-space: pre-wrap;
       word-wrap: break-word;
-      color: blue;
+      visibility: hidden;
     }
     span.markup {
-      background: rgb(0, 188, 212);
+      visibility: visible;
+      color: transparent;
+      background: $HIGHLIGHT_COLOR;
     }
   }
 
-  &SuggestionsOverlay {
-    box-sizing: border-box;
-    z-index: 9999; /* TODO */
-    position: absolute;
-    left: 40%;
-    bottom: 0;
+  &SuggestionsContainer {
+    display: block;
     height: 64px;
-    width: 50%;
-
-    border: 1px solid magenta;
+    border: 1px solid $DEBUG_COLOR;
   }
 
   &SuggestionList {
@@ -66,6 +64,10 @@ atmention-textarea {
 
   &SuggestionListItem {
     white-space: nowrap;
+    &.active,
+    &.active:hover {
+      background: $HIGHLIGHT_COLOR;
+    }
     &:hover {
       background: #eee;
       cursor: pointer;

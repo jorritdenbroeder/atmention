@@ -17,6 +17,18 @@ function RootController($timeout) {
         label: query,
         display: query,
         id: query + '@example.com'
+      }, {
+        label: 'Label2',
+        display: query,
+        id: query + '@example.com'
+      }, {
+        label: 'Label3',
+        display: query,
+        id: query + '@example.com'
+      },{
+        label: 'Label4',
+        display: query,
+        id: query + '@example.com'
       }];
     });
   };

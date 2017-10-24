@@ -3,10 +3,6 @@ atmention-textarea {
 }
 
 .atmention {
-  * {
-    box-sizing: border-box;
-  }
-
   &Container {
     position: relative;
     border: 1px solid magenta;
@@ -15,14 +11,17 @@ atmention-textarea {
 
   &InputField,
   &Highlighter {
+    display: block;
     position: absolute;
     width: 100%;
     height: 100%;
     margin: 0;
-    padding: 8px;
+    padding: 8px; /* TODO */
     border: none;
     outline: 0;
-    font-size: 14px;
+    overflow: auto;
+    font-family: inherit;
+    font-size: inherit;
   }
 
   &InputField {
@@ -31,7 +30,16 @@ atmention-textarea {
   }
 
   &Highlighter {
-    overflow: hidden;
+    pointer-events: none;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    left: 1px; top: 1px; font-weight: bold; /* TODO temporary, for debugging */
+
+    span {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      color: blue;
+    }
     span.markup {
       background: rgb(0, 188, 212);
     }

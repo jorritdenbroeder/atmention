@@ -1,5 +1,7 @@
 'use strict';
 
+require('./styles/index.scss');
+
 require('angular');
 require('../src/frameworks/angularjs');
 require('./app/app.module');

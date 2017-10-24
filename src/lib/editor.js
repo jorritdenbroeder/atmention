@@ -168,29 +168,29 @@ function editorFactory(options) {
     var xStart, xEnd, xValue; // x = deleted
     var iStart, iEnd, iValue; // i = inserted
 
-    console.log('[*] APPLY', 'prevSelection:', selectionStart, selectionEnd, 'currSelection:', start, end, 'delta', delta, 'from: "' + displayValue + '"', 'to: "' + value + '"');
+    // console.log('[*] APPLY', 'prevSelection:', selectionStart, selectionEnd, 'currSelection:', start, end, 'delta', delta, 'from: "' + displayValue + '"', 'to: "' + value + '"');
 
     if (start < end) {
-      console.log('CURR=RANGE');
+      // console.log('CURR=RANGE');
 
       iStart = start;
       iEnd = end;
 
       if (selectionStart < selectionEnd) {
-        console.log('PREV=RANGE');
+        // console.log('PREV=RANGE');
         xStart = -1;
         xEnd = -1;
       } else {
-        console.log('PREV=CARET');
+        // console.log('PREV=CARET');
         xEnd = selectionEnd;
         xStart = xEnd - (iEnd - iStart - delta);
       }
     }
     else {
-      console.log('CURR=CARET');
+      // console.log('CURR=CARET');
 
       if (selectionStart < selectionEnd) {
-        console.log('PREV=RANGE');
+        // console.log('PREV=RANGE');
 
         // Deleted part
         // FIXME: deleted part may be wrong in Firefox when you select a range, then drag something in from outside.
@@ -203,7 +203,7 @@ function editorFactory(options) {
         iStart = iEnd - ((xEnd - xStart) + delta); // length of deleted part
       }
       else {
-        console.log('PREV=CARET');
+        // console.log('PREV=CARET');
 
         if (delta < 0) {
           // Deleted part. Use min/max to handle forward/backward deletion (DEL vs. BACKSPACE)
@@ -225,8 +225,8 @@ function editorFactory(options) {
       iValue = value.slice(iStart, iEnd);
     }
 
-    console.log('Deleted "' + xValue + '"', xStart < xEnd ? xStart + ',' + xEnd : '');
-    console.log('Inserted "' + iValue + '"', iStart < iEnd ? iStart + ',' + iEnd : '');
+    // console.log('Deleted "' + xValue + '"', xStart < xEnd ? xStart + ',' + xEnd : '');
+    // console.log('Inserted "' + iValue + '"', iStart < iEnd ? iStart + ',' + iEnd : '');
 
     // Apply changes to markup
     var displayRange = {

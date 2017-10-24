@@ -16,6 +16,7 @@ function InputController($element, $scope, $timeout, atmention) {
   var ctrl = this;
   var editor;
   var inputElement;
+  var highlighterElement;
   var lastQuery;
 
   ctrl.markup = '';
@@ -29,11 +30,11 @@ function InputController($element, $scope, $timeout, atmention) {
     editor = atmention.editor();
 
     inputElement = $element.find('textarea')[0];
+    highlighterElement = $element.find('atmention-highlighter')[0];
 
     // Parse markup whenever the ngModel value changes
     if (ctrl.ngModel) {
       ctrl.ngModel.$formatters.push(function (value) {
-        console.log('--------', value);
         editor.parseMarkup(value || '');
         updateDisplay();
         updateDebugInfo();
@@ -48,14 +49,17 @@ function InputController($element, $scope, $timeout, atmention) {
      * - Cases for selection change https://github.com/2is10/selectionchange-polyfill
      */
     document.addEventListener('selectionchange', onSelectionChanged);
+    inputElement.addEventListener('input', onInput);
+    inputElement.addEventListener('scroll', onInputElementScrolled);
 
     // Needed for Firefox to keep selection range in sync
     inputElement.addEventListener('select', onSelectionChanged);
     inputElement.addEventListener('keyup', onSelectionChanged);
     inputElement.addEventListener('mousedown', onSelectionChanged);
 
-    inputElement.addEventListener('input', onInput);
 
+
+    // TODO
     // Reset on blur, to prevent range from being deleted on drop-from-outside (Firefox)
     // displayElm.addEventListener('blur', function (e) {
     //   editor.setSelectionRange(0, 0);
@@ -67,7 +71,7 @@ function InputController($element, $scope, $timeout, atmention) {
     // TODO remove event listeners
   }
 
-  function onSelectionChanged(e) {
+  function onSelectionChanged(evt) {
     editor.setSelectionRange(inputElement.selectionStart, inputElement.selectionEnd);
     detectSearchQuery();
     updateDebugInfo();
@@ -84,6 +88,12 @@ function InputController($element, $scope, $timeout, atmention) {
     detectSearchQuery();
 
     updateDebugInfo();
+  }
+
+  function onInputElementScrolled(evt) {
+    // Sync highlighter scroll position
+    highlighterElement.scrollTop = inputElement.scrollTop;
+    highlighterElement.scrollLeft = inputElement.scrollLeft;
   }
 
   // Scans for new @mention right before caret
@@ -122,7 +132,6 @@ function InputController($element, $scope, $timeout, atmention) {
    * @param suggestion.searchResult.id
    */
   function applySuggestion(suggestion) {
-    console.log('Applying', suggestion);
     editor.insertMarkup(suggestion.searchResult.display, suggestion.searchResult.id, suggestion.queryInfo.start, suggestion.queryInfo.end);
     updateDisplay();
   }

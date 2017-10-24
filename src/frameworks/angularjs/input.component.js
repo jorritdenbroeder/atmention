@@ -21,6 +21,7 @@ angular.module('atmentionModule')
 
 function InputController($element, $scope, $timeout, atmention) {
   var ctrl = this;
+  var destroyQueue = [];
   var editor;
   var inputElement;
   var highlighterElement;
@@ -41,7 +42,7 @@ function InputController($element, $scope, $timeout, atmention) {
     inputElement = $element.find('textarea')[0];
     highlighterElement = $element.find('atmention-highlighter')[0];
 
-    // Parse markup whenever the ngModel value changes
+    // Reload markup whenever the ngModel value changes
     if (ctrl.ngModel) {
       ctrl.ngModel.$formatters.push(function (value) {
         editor.parseMarkup(value || '');
@@ -50,34 +51,37 @@ function InputController($element, $scope, $timeout, atmention) {
       });
     }
 
-    /**
-     * NOTES
-     * For touch-long-press-to-select, Firefox triggers 'select'. Chrome doesn't, and triggers 'selectionchange' instead
-     * See:
-     * - Event reference https://developer.mozilla.org/en-US/docs/Web/Events/selectionchange
-     * - Cases for selection change https://github.com/2is10/selectionchange-polyfill
-     */
-    document.addEventListener('selectionchange', onSelectionChanged);
-    inputElement.addEventListener('input', onInput);
-    inputElement.addEventListener('scroll', onInputElementScrolled);
-    inputElement.addEventListener('keydown', onKeyDown);
-    inputElement.addEventListener('blur', onBlur);
+    // Register event listeners
+    addListener(document, 'selectionchange', onSelectionChanged);
+    addListener(inputElement, 'input', onInput);
+    addListener(inputElement, 'scroll', onInputElementScrolled);
+    addListener(inputElement, 'keydown', onKeyDown);
+    addListener(inputElement, 'blur', onBlur);
 
     // Needed for Firefox to keep selection range in sync
-    inputElement.addEventListener('select', onSelectionChanged);
-    inputElement.addEventListener('keyup', onSelectionChanged);
-    inputElement.addEventListener('mousedown', onSelectionChanged);
+    addListener(inputElement, 'select', onSelectionChanged);
+    addListener(inputElement, 'keyup', onSelectionChanged);
+    addListener(inputElement, 'mousedown', onSelectionChanged);
 
     // TODO
     // Reset on blur, to prevent range from being deleted on drop-from-outside (Firefox)
-    // displayElm.addEventListener('blur', function (e) {
+    // addListener(inputElement, 'blur', function (e) {
     //   editor.setSelectionRange(0, 0);
     //   updateDebugInfo();
     // });
   }
 
   function $onDestroy() {
-    // TODO remove event listeners
+    destroyQueue.forEach(function (func) {
+      func();
+    });
+  }
+
+  function addListener(elm, eventName, listener) {
+    elm.addEventListener(eventName, listener);
+    destroyQueue.push(function () {
+      elm.removeEventListener(eventName, listener);
+    });
   }
 
   function onSelectionChanged(evt) {
@@ -139,15 +143,16 @@ function InputController($element, $scope, $timeout, atmention) {
   }
 
   function onBlur() {
+    // Using timeout to prevent active suggestion from being reset before we had a chance to handle it.
     // FIXME: solve without using a timeout
-    // Timeout to give clicking a sugggestion a chance to fire first
     $timeout(clearSuggestions, 250);
   }
 
-  // Scans for new @mention right before caret
+  // Scans for new @mention search query right before caret
   function detectSearchQuery() {
     var queryInfo = editor.detectSearchQuery(inputElement.value, inputElement.selectionStart, inputElement.selectionEnd);
     var query = queryInfo ? queryInfo.query : null;
+
     if (query !== lastQuery) {
       lastQuery = query;
       handleQueryChanged(queryInfo || {});
@@ -165,7 +170,7 @@ function InputController($element, $scope, $timeout, atmention) {
     else {
       ctrl.searchHook(queryInfo.query).then(function (searchResults) {
         if (!searchResults) {
-          console.error('Search must return an array');
+          console.error('Search callback must return an array');
           return;
         }
 
@@ -193,15 +198,18 @@ function InputController($element, $scope, $timeout, atmention) {
     if (index < 0) {
       index = 0;
     }
+
     if (index > ctrl.suggestions.length - 1) {
       index = ctrl.suggestions.length - 1;
     }
+
     ctrl.activeSuggestionIndex = index;
     ctrl.activeSuggestion = ctrl.suggestions[index];
   }
 
   /**
    * Inserts a new mention from a suggestion
+   *
    * @param suggestion.queryInfo
    * @param suggestion.searchResult
    * @param suggestion.searchResult.display

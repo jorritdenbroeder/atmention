@@ -17,7 +17,6 @@ function editorFactory(options) {
   var selectionStart = null;
   var selectionEnd = null;
 
-  editor.debug = debug;
   editor.parseMarkup = parseMarkup;
   editor.getSegments = getSegments;
   editor.getDisplay = getDisplay;
@@ -37,16 +36,9 @@ function editorFactory(options) {
     markupRegex = util.regexFromTemplate(config.pattern);
   }
 
-  function debug() {
-    segments.forEach(function (s, i) {
-      console.log('#' + i, s.markup.start, s.markup.end, s.markup.text, s.data);
-    });
-    segments.forEach(function (s, i) {
-      console.log('#' + i, s.display.start, s.display.end, s.display.text, s.data);
-    });
-    return editor;
-  }
-
+  /**
+   * Splits a marked up text into segments, at mention bounds
+   */
   function parseMarkup(markup) {
     var match;
     var matchedMarkup;
@@ -159,14 +151,17 @@ function editorFactory(options) {
   }
 
   /**
-   * NOTES
-   * - Chrome: drag is a 2-step operation (delete first, then insert). After release, the insert is still selected.
-   * - Firefox: drag is a single operation. After drop, selection is cleared, so may be hard to determine deleted part.
+   * Applies changes in the (user-entered) display value to the (internal) markup + updates displayValue if any mentions
+   * were deleted.
+   *
+   * @param {string} value displayValue after the change
+   * @param {int} start start of selection after the change
+   * @param {int} end end of selection after the change
    */
   function applyDisplayValue(value, start, end) {
     var delta = value.length - displayValue.length;
-    var xStart, xEnd, xValue; // x = deleted
-    var iStart, iEnd, iValue; // i = inserted
+    var xStart, xEnd, xValue; // indexes and value of the deleted part
+    var iStart, iEnd, iValue; // indexes and value of the inserted part
 
     // console.log('[*] APPLY', 'prevSelection:', selectionStart, selectionEnd, 'currSelection:', start, end, 'delta', delta, 'from: "' + displayValue + '"', 'to: "' + value + '"');
 
@@ -193,8 +188,6 @@ function editorFactory(options) {
         // console.log('PREV=RANGE');
 
         // Deleted part
-        // FIXME: deleted part may be wrong in Firefox when you select a range, then drag something in from outside.
-        // Currently fixed by clearing selection on blur
         xStart = selectionStart;
         xEnd = selectionEnd;
 
@@ -228,15 +221,16 @@ function editorFactory(options) {
     // console.log('Deleted "' + xValue + '"', xStart < xEnd ? xStart + ',' + xEnd : '');
     // console.log('Inserted "' + iValue + '"', iStart < iEnd ? iStart + ',' + iEnd : '');
 
-    // Apply changes to markup
+    // Update markup
+    // When nothing was deleted, take the insert position
     var displayRange = {
       start: xValue ? xStart : iStart,
       end: xValue ? xEnd : iStart
     };
-    var mappedRange = mapRange(displayRange, 'display', 'markup');
+    var mappedRange = mapRange(displayRange, 'display', 'markup'); // maps from `display` to `markup`
     markupValue = util.spliceString(markupValue, mappedRange.start, mappedRange.end, iValue);
 
-    // Update display value
+    // Update display value, in case mentions were deleted
     parseMarkup(markupValue);
 
     // Update selection range
@@ -244,8 +238,18 @@ function editorFactory(options) {
     selectionEnd = end;
   }
 
+  /**
+   * Determines if the suggestions should be triggered.
+   * Searches for a sequence, returns only if the caret is right behind it.
+   *
+   * @param {string} value Text to search
+   * @param {int} newSelectionStart
+   * @param {int} newSelectionStart
+   *
+   * @returns {QueryInfo} Info for inserting a mention later
+   */
   function detectSearchQuery(value, newSelectionStart, newSelectionEnd) {
-    var mentionRegex = new RegExp('@([A-Za-z0-9_]+)', 'g'); // e.g. matches with @user_name
+    var mentionRegex = new RegExp('@([A-Za-z0-9_]+)', 'g'); // e.g. matches @user_name
     var match;
     var matchedText;
     var query;
@@ -268,7 +272,8 @@ function editorFactory(options) {
   }
 
   /**
-   * Inserts markup at the current cursor position (in displayValue)
+   * Adds a mention at the current cursor position
+   *
    * @param data.id
    * @param data.display
    */
@@ -287,22 +292,20 @@ function editorFactory(options) {
     selectionEnd = end;
   }
 
+  /**
+   * Maps a selection range from display value (`display`) to markup (`markup`) or vice versa. Snaps to segment bounds
+   * if it overlaps a mention.
+   */
   function mapRange(range, mapFrom, mapTo) {
     var rangeLength = range.start - range.end;
     var start;
     var end;
     var delta;
 
-    var startsInMention;
-
     segments.forEach(function (segment) {
       if (range.start >= segment[mapFrom].start && range.start < segment[mapFrom].end) {
         delta = segment.data ? 0 : range.start - segment[mapFrom].start;
         start = segment[mapTo].start + delta;
-
-        if (segment.data && range.start > segment[mapFrom].start) {
-          startsInMention = segment;
-        }
       }
       if (range.end > segment[mapFrom].start && range.end <= segment[mapFrom].end) {
         delta = segment.data ? 0 : range.end - segment[mapFrom].end;
@@ -318,8 +321,7 @@ function editorFactory(options) {
 
     return {
       start: start,
-      end: end,
-      startsInMention: startsInMention
+      end: end
     };
 
   }

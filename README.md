@@ -5,3 +5,10 @@
 @mention someone in a &lt;textarea&gt;
 
 WORK IN PROGRESS
+
+
+## Installation
+
+* run npm install or run yarn
+* run npm start
+* Go to http://localhost:8081/

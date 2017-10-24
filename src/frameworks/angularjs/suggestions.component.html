@@ -1,7 +1,11 @@
-{{$ctrl.suggestions.length}} result(s):
-<ul class="atmentionSuggestionList">
+<div ng-if="!$ctrl.suggestions.length">
+  No results
+</div>
+
+<ul ng-if="$ctrl.suggestions.length" class="atmentionSuggestionList">
   <li class="atmentionSuggestionListItem" ng-repeat="suggestion in $ctrl.suggestions" ng-click="$ctrl.onSelect(suggestion, $event)">
-    <div><strong>{{ suggestion.searchResult.label1 }}</strong></div>
-    <div>{{ suggestion.searchResult.label2 }}</div>
+    <div>
+      <strong>{{ suggestion.searchResult.label }}</strong>
+    </div>
   </li>
 </ul>

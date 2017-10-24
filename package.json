@@ -2,6 +2,7 @@
   "name": "atmention",
   "version": "1.0.0",
   "description": "",
+  "main": "src/frameworks/angularjs",
   "scripts": {
     "start": "cd demo && webpack-dev-server --config webpack.config.js --progress",
     "build": "webpack",

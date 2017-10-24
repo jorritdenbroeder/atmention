@@ -1,22 +1,21 @@
 'use strict';
 
 angular.module('atmentionModule')
-  .component('atmention', {
+  .component('atmentionTextarea', {
     require: {
-      ngModel: 'ngModel'
+      ngModel: '?ngModel'
     },
     template: require('./input.component.html'),
     controller: InputController,
     bindings: {
-      searchHook: '<'
+      searchHook: '<search'
     }
   });
 
 function InputController($element, $scope, $timeout, atmention) {
   var ctrl = this;
   var editor;
-  var displayElm;
-  var markupElm;
+  var inputElement;
   var lastQuery;
 
   ctrl.markup = '';
@@ -29,17 +28,17 @@ function InputController($element, $scope, $timeout, atmention) {
   function $onInit() {
     editor = atmention.editor();
 
-    // Find DOM elements
-    var elm = $element.find('textarea');
-    displayElm = elm[0];
-    markupElm = elm[1];
+    inputElement = $element.find('textarea')[0];
 
     // Parse markup whenever the ngModel value changes
-    ctrl.ngModel.$formatters.push(function (x) {
-      editor.parseMarkup(x);
-      updateDisplay();
-      updateDebugInfo();
-    });
+    if (ctrl.ngModel) {
+      ctrl.ngModel.$formatters.push(function (value) {
+        console.log('--------', value);
+        editor.parseMarkup(value || '');
+        updateDisplay();
+        updateDebugInfo();
+      });
+    }
 
     /**
      * NOTES
@@ -51,11 +50,11 @@ function InputController($element, $scope, $timeout, atmention) {
     document.addEventListener('selectionchange', onSelectionChanged);
 
     // Needed for Firefox to keep selection range in sync
-    displayElm.addEventListener('select', onSelectionChanged);
-    displayElm.addEventListener('keyup', onSelectionChanged);
-    displayElm.addEventListener('mousedown', onSelectionChanged);
+    inputElement.addEventListener('select', onSelectionChanged);
+    inputElement.addEventListener('keyup', onSelectionChanged);
+    inputElement.addEventListener('mousedown', onSelectionChanged);
 
-    displayElm.addEventListener('input', onInput);
+    inputElement.addEventListener('input', onInput);
 
     // Reset on blur, to prevent range from being deleted on drop-from-outside (Firefox)
     // displayElm.addEventListener('blur', function (e) {
@@ -69,13 +68,13 @@ function InputController($element, $scope, $timeout, atmention) {
   }
 
   function onSelectionChanged(e) {
-    editor.setSelectionRange(displayElm.selectionStart, displayElm.selectionEnd);
+    editor.setSelectionRange(inputElement.selectionStart, inputElement.selectionEnd);
     detectSearchQuery();
     updateDebugInfo();
   }
 
   function onInput(evt) {
-    var text = displayElm.value;
+    var text = inputElement.value;
     var start = evt.target.selectionStart;
     var end = evt.target.selectionEnd;
 
@@ -89,7 +88,7 @@ function InputController($element, $scope, $timeout, atmention) {
 
   // Scans for new @mention right before caret
   function detectSearchQuery() {
-    var queryInfo = editor.detectSearchQuery(displayElm.value, displayElm.selectionStart, displayElm.selectionEnd);
+    var queryInfo = editor.detectSearchQuery(inputElement.value, inputElement.selectionStart, inputElement.selectionEnd);
     var query = queryInfo ? queryInfo.query : null;
     if (query !== lastQuery) {
       lastQuery = query;
@@ -101,7 +100,7 @@ function InputController($element, $scope, $timeout, atmention) {
     if (!queryInfo.query) {
       ctrl.suggestions = [];
     }
-    else {
+    else if (ctrl.searchHook) {
       ctrl.searchHook(queryInfo.query).then(function (searchResults) {
         ctrl.suggestions = searchResults.map(function (searchResult) {
           var suggestion = {
@@ -129,12 +128,14 @@ function InputController($element, $scope, $timeout, atmention) {
   }
 
   function updateDisplay() {
-    displayElm.value = editor.getDisplay();
-    displayElm.selectionStart = editor.getSelectionRange().start;
-    displayElm.selectionEnd = editor.getSelectionRange().end;
+    inputElement.value = editor.getDisplay();
+    inputElement.selectionStart = editor.getSelectionRange().start;
+    inputElement.selectionEnd = editor.getSelectionRange().end;
     ctrl.segments = editor.getSegments();
 
-    ctrl.ngModel.$setViewValue(editor.getMarkup());
+    if (ctrl.ngModel) {
+      ctrl.ngModel.$setViewValue(editor.getMarkup());
+    }
   }
 
   function updateDebugInfo() {

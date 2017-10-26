@@ -15,6 +15,7 @@ angular.module('atmentionModule')
     template: require('./input.component.html'),
     controller: InputController,
     bindings: {
+      placeholder: '@',
       searchHook: '<search'
     }
   });

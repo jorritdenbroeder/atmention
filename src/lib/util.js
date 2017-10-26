@@ -9,8 +9,9 @@ var util = module.exports = {
   regexFromTemplate: function (tpl, matchAtEnd) {
     var pattern = util.escapeRegex(tpl);
 
+    // TODO(?) allow any character except []() and/or make this configurable
     var allowedDisplayChars = '([a-zA-Z0-9 :\.@]+?)';
-    var allowedIdChars = '([a-zA-Z0-9 :\.@]+?)';
+    var allowedIdChars = '([a-zA-Z0-9 @:\.\-]+?)';
 
     pattern = pattern.replace('__DISPLAY__', allowedDisplayChars); // '(.+?)'
     pattern = pattern.replace('__ID__', allowedIdChars); // '(.+?)'

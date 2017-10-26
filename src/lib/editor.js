@@ -3,7 +3,7 @@
 var util = require('./util');
 
 editorFactory.defaultOptions = {
-  pattern: '@[__DISPLAY__](__ID__)'
+  pattern: '[__DISPLAY__](__ID__)'
 };
 
 function editorFactory(options) {
@@ -261,6 +261,7 @@ function editorFactory(options) {
    * @returns {QueryInfo} Info for inserting a mention later
    */
   function detectSearchQuery(value, newSelectionStart, newSelectionEnd) {
+    // TODO improve regex + make configurable
     var mentionRegex = new RegExp('@([A-Za-z0-9_]+)', 'g'); // e.g. matches @user_name
     var match;
     var matchedText;
@@ -270,6 +271,7 @@ function editorFactory(options) {
     while (!queryInfo && (match = mentionRegex.exec(value))) {
       matchedText = match[0]; // including @ prefix
       query = match[1]; // capture group
+
       if (newSelectionStart > match.index && newSelectionStart <= match.index + matchedText.length) {
         queryInfo = {
           matchedText: matchedText,

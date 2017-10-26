@@ -174,6 +174,11 @@ function InputController($element, $scope, $timeout, atmention) {
           return;
         }
 
+        // Do nothing if query has changed in the mean time
+        if (queryInfo.query !== lastQuery) {
+          return;
+        }
+
         if (!searchResults.length) {
           clearSuggestions();
         } else {

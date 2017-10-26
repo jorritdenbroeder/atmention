@@ -85,8 +85,8 @@ function InputController($element, $scope, $timeout, atmention) {
   }
 
   function onSelectionChanged(evt) {
-    editor.setSelectionRange(inputElement.selectionStart, inputElement.selectionEnd);
     $scope.$evalAsync(function () {
+      editor.setSelectionRange(inputElement.selectionStart, inputElement.selectionEnd);
       detectSearchQuery();
       updateDebugInfo();
     });
@@ -97,9 +97,8 @@ function InputController($element, $scope, $timeout, atmention) {
     var start = evt.target.selectionStart;
     var end = evt.target.selectionEnd;
 
-    editor.applyDisplayValue(text, start, end);
-
     $scope.$evalAsync(function () {
+      editor.applyDisplayValue(text, start, end);
       updateDisplay();
       detectSearchQuery();
       updateDebugInfo();

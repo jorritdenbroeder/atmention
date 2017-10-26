@@ -1,28 +1,30 @@
+$DEBUG_COLOR: magenta;
+$HIGHLIGHT_COLOR: rgb(0, 188, 212);
+
 atmention-textarea {
   display: block;
 }
 
 .atmention {
-  * {
-    box-sizing: border-box;
-  }
-
-  &Container {
+  &InputContainer {
     position: relative;
-    border: 1px solid magenta;
+    border: 1px solid $DEBUG_COLOR;
     height: 150px; /* TODO */
   }
 
   &InputField,
   &Highlighter {
+    display: block;
     position: absolute;
     width: 100%;
     height: 100%;
     margin: 0;
-    padding: 8px;
+    padding: 8px; /* TODO */
     border: none;
     outline: 0;
-    font-size: 14px;
+    overflow: auto;
+    font-family: inherit;
+    font-size: inherit;
   }
 
   &InputField {
@@ -31,22 +33,26 @@ atmention-textarea {
   }
 
   &Highlighter {
-    overflow: hidden;
+    pointer-events: none;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+
+    span {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      visibility: hidden;
+    }
     span.markup {
-      background: rgb(0, 188, 212);
+      visibility: visible;
+      color: transparent;
+      background: $HIGHLIGHT_COLOR;
     }
   }
 
-  &SuggestionsOverlay {
-    box-sizing: border-box;
-    z-index: 9999; /* TODO */
-    position: absolute;
-    left: 40%;
-    bottom: 0;
+  &SuggestionsContainer {
+    display: block;
     height: 64px;
-    width: 50%;
-
-    border: 1px solid magenta;
+    border: 1px solid $DEBUG_COLOR;
   }
 
   &SuggestionList {
@@ -58,6 +64,10 @@ atmention-textarea {
 
   &SuggestionListItem {
     white-space: nowrap;
+    &.active,
+    &.active:hover {
+      background: $HIGHLIGHT_COLOR;
+    }
     &:hover {
       background: #eee;
       cursor: pointer;

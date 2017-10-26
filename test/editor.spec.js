@@ -22,8 +22,9 @@ describe('Editor', function () {
   });
 
   it('Accepts empty markup', function () {
-    var segments = editor.parseMarkup('').getSegments();
-    expect(segments.length).toBe(0);
+    var emptyMarkup;
+
+    expect(editor.parseMarkup(emptyMarkup).getSegments().length).toBe(0);
   });
 
 });

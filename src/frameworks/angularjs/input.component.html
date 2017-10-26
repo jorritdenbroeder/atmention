@@ -1,10 +1,14 @@
-<div class="atmentionContainer">
+<div class="atmentionInputContainer">
   <atmention-highlighter class="atmentionHighlighter" segments="$ctrl.segments"></atmention-highlighter>
   <textarea class="atmentionInputField"></textarea>
-  <atmention-suggestions class="atmentionSuggestionsOverlay" suggestions="$ctrl.suggestions" on-select="$ctrl.applySuggestion"></atmention-suggestions>
 </div>
 
+<atmention-suggestions class="atmentionSuggestionsContainer"
+  suggestions="$ctrl.suggestions"
+  active-suggestion-index="$ctrl.activeSuggestionIndex"
+  on-select="$ctrl.applySuggestion"></atmention-suggestions>
+
 <!-- Debug info -->
-<div style="font-size: 12px; color: gray; margin-top: 4px">
+<!-- <div style="font-size: 12px; color: gray; margin-top: 4px">
   <pre>current selection: {{$ctrl.selectionStart}},{{$ctrl.selectionEnd}}</pre>
-</div>
+</div> -->

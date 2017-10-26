@@ -1,11 +1,8 @@
-<div ng-if="!$ctrl.suggestions.length">
-  No results
-</div>
-
 <ul ng-if="$ctrl.suggestions.length" class="atmentionSuggestionList">
-  <li class="atmentionSuggestionListItem" ng-repeat="suggestion in $ctrl.suggestions" ng-click="$ctrl.onSelect(suggestion, $event)">
-    <div>
-      <strong>{{ suggestion.searchResult.label }}</strong>
-    </div>
+  <li class="atmentionSuggestionListItem"
+    ng-class="{ active: $index === $ctrl.visibleSuggestionIndex }"
+    ng-repeat="suggestion in $ctrl.visibleSuggestions"
+    ng-click="$ctrl.onSelect(suggestion, $event)"
+    ng-bind="suggestion.searchResult.label">
   </li>
 </ul>

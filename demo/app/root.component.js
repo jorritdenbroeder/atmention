@@ -14,8 +14,19 @@ function RootController($timeout) {
   ctrl.search = function (query) {
     return $timeout(function () {
       return [{
-        label1: query,
-        label2: query + '@example.com',
+        label: query,
+        display: query,
+        id: query + '@example.com'
+      }, {
+        label: 'Label2',
+        display: query,
+        id: query + '@example.com'
+      }, {
+        label: 'Label3',
+        display: query,
+        id: query + '@example.com'
+      },{
+        label: 'Label4',
         display: query,
         id: query + '@example.com'
       }];

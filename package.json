@@ -15,6 +15,7 @@
   "devDependencies": {
     "angular": "1.5.8",
     "angular-mocks": "1.5.8",
+    "angular-sanitize": "1.5.8",
     "coveralls": "^3.0.0",
     "css-loader": "^0.28.7",
     "html-loader": "^0.5.1",

@@ -3,35 +3,40 @@ $BORDER_COLOR: #aaa;
 
 atmention-textarea {
   display: block;
+  position: relative;
 }
 
 .atmention {
   &InputContainer {
     position: relative;
-    height: 150px; /* TODO */
+    overflow-y: visible;
+    border: 1px solid $BORDER_COLOR;
   }
 
   &InputField,
   &Highlighter {
-    display: block;
-    position: absolute;
-    overflow: auto;
-    width: 100%;
-    height: 100%;
     margin: 0;
     padding: 8px; /* TODO */
-    border-width: 1px;
     font-family: inherit;
     font-size: inherit;
+    border: none;
   }
 
   &InputField {
-    resize: none;
+    position: absolute;
+    overflow: hidden;
+    bottom: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
     background: transparent;
+
+    resize: none;
   }
 
   &Highlighter {
-    pointer-events: none;
+    display: block;
+
     white-space: pre-wrap;
     word-wrap: break-word;
 
@@ -50,9 +55,7 @@ atmention-textarea {
 
   &SuggestionsContainer {
     display: block;
-    height: 64px;
-    border: 1px solid $BORDER_COLOR;
-    border-top: none;
+    // height: 64px;
   }
 
   &SuggestionList {

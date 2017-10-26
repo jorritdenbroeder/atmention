@@ -31,7 +31,7 @@ function HighlighterController($element) {
     });
 
     // Ensure new line at the end to fix highlighter scrolling issue
-    $element.append(angular.element('<br/><br/>'));
+    $element.append('<br/><br/>');
   }
 
 }

@@ -3,6 +3,6 @@
     ng-class="{ active: $index === $ctrl.visibleSuggestionIndex }"
     ng-repeat="suggestion in $ctrl.visibleSuggestions"
     ng-click="$ctrl.onSelect(suggestion, $event)"
-    ng-bind="suggestion.searchResult.label">
+    ng-bind-html="suggestion.searchResult.label">
   </li>
 </ul>

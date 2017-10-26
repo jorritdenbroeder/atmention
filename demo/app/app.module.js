@@ -1,3 +1,3 @@
 'use strict';
 
-angular.module('appModule', ['atmentionModule']);
+angular.module('appModule', ['ngSanitize', 'atmentionModule']);

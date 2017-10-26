@@ -39,7 +39,8 @@ function editorFactory(options) {
   /**
    * Splits a marked up text into segments, at mention bounds
    */
-  function parseMarkup(markup) {
+  function parseMarkup(value) {
+    var markup = value || '';
     var match;
     var matchedMarkup;
     var matchedDisplay;
@@ -162,6 +163,10 @@ function editorFactory(options) {
     var delta = value.length - displayValue.length;
     var xStart, xEnd, xValue; // indexes and value of the deleted part
     var iStart, iEnd, iValue; // indexes and value of the inserted part
+    var oldDisplayValue = displayValue;
+    var newMarkupValue;
+    var nextSelectionStart = start;
+    var nextSelectionEnd = end;
 
     // console.log('[*] APPLY', 'prevSelection:', selectionStart, selectionEnd, 'currSelection:', start, end, 'delta', delta, 'from: "' + displayValue + '"', 'to: "' + value + '"');
 
@@ -222,20 +227,27 @@ function editorFactory(options) {
     // console.log('Inserted "' + iValue + '"', iStart < iEnd ? iStart + ',' + iEnd : '');
 
     // Update markup
-    // When nothing was deleted, take the insert position
+    // When nothing was deleted, start from the insert position
     var displayRange = {
       start: xValue ? xStart : iStart,
       end: xValue ? xEnd : iStart
     };
-    var mappedRange = mapRange(displayRange, 'display', 'markup'); // maps from `display` to `markup`
-    markupValue = util.spliceString(markupValue, mappedRange.start, mappedRange.end, iValue);
+    var mappedRange = mapRangeToMarkup(displayRange);
+    newMarkupValue = util.spliceString(markupValue, mappedRange.start, mappedRange.end, iValue);
 
     // Update display value, in case mentions were deleted
-    parseMarkup(markupValue);
+    parseMarkup(newMarkupValue);
+
+    // Update selection range when a mention was deleted
+    if (displayValue.length !== value.length) {
+      var newDisplayRange = mapRangeToDisplay({ start: mappedRange.start, end: mappedRange.start });
+      nextSelectionStart = newDisplayRange.start + (iValue ? iValue.length : 0);
+      nextSelectionEnd = newDisplayRange.start + (iValue ? iValue.length : 0);
+    }
 
     // Update selection range
-    selectionStart = start;
-    selectionEnd = end;
+    selectionStart = nextSelectionStart;
+    selectionEnd = nextSelectionEnd;
   }
 
   /**
@@ -277,19 +289,32 @@ function editorFactory(options) {
    * @param data.id
    * @param data.display
    */
-  function insertMarkup (display, id, start, end) {
+  function insertMarkup(display, id, start, end) {
     var markup = util.createMarkup(config.pattern, display, id);
-    var mappedRange = mapRange({ start: start, end: end }, 'display', 'markup');
+    var markupRange = mapRangeToMarkup({ start: start, end: end });
+    var insertedRange;
+    var newMarkupValue;
 
     // Insert into markup
-    markupValue = util.spliceString(markupValue, mappedRange.start, mappedRange.end, markup);
+    newMarkupValue = util.spliceString(markupValue, markupRange.start, markupRange.end, markup);
 
     // Update display value
-    parseMarkup(markupValue);
+    parseMarkup(newMarkupValue);
 
-    // TODO Update selection range
-    selectionStart = start;
-    selectionEnd = end;
+    // Map back to diplay text to get the inserted part
+    insertedRange = mapRangeToDisplay(markupRange);
+
+    // Update selection range
+    selectionStart = insertedRange.end;
+    selectionEnd = insertedRange.end;
+  }
+
+  function mapRangeToMarkup(displayRange) {
+    return mapRange(displayRange, 'display', 'markup');
+  }
+
+  function mapRangeToDisplay(markupRange) {
+    return mapRange(markupRange, 'markup', 'display');
   }
 
   /**
@@ -323,7 +348,6 @@ function editorFactory(options) {
       start: start,
       end: end
     };
-
   }
 
   return editor;

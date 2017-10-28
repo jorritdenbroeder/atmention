@@ -1,6 +1,6 @@
 <div class="atmentionInputContainer">
   <atmention-highlighter class="atmentionHighlighter" segments="$ctrl.segments"></atmention-highlighter>
-  <textarea placeholder="{{ $ctrl.placeholder }}" class="atmentionInputField"></textarea>
+  <textarea placeholder="{{ $ctrl.placeholder }}" class="atmentionInputField" spellcheck="false"></textarea>
 </div>
 
 <atmention-suggestions class="atmentionSuggestionsContainer"
@@ -9,6 +9,6 @@
   on-select="$ctrl.applySuggestion"></atmention-suggestions>
 
 <!-- Debug info -->
-<!-- <div style="font-size: 12px; color: gray; margin-top: 4px">
-  <pre>current selection: {{$ctrl.selectionStart}},{{$ctrl.selectionEnd}}</pre>
-</div> -->
+<div style="font-size: 12px; color: gray; margin-top: 4px">
+  <pre>{{ $ctrl.debugInfo }}</pre>
+</div>

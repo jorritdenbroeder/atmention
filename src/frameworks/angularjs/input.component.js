@@ -27,9 +27,10 @@ function InputController($element, $scope, $timeout, atmention) {
   var inputElement;
   var highlighterElement;
   var lastQuery;
-  var activeSuggestion;
+  var forcedCaretPositionAfterNextSelectionChanges = null;
+  var numUnappliedSelectionChanges = 0;
 
-  ctrl.markup = '';
+  ctrl.debugInfo = '';
   ctrl.suggestions = [];
   ctrl.activeSuggestionIndex = -1;
   ctrl.segments = []; // for highlighter
@@ -59,17 +60,10 @@ function InputController($element, $scope, $timeout, atmention) {
     addListener(inputElement, 'keydown', onKeyDown);
     addListener(inputElement, 'blur', onBlur);
 
-    // Needed for Firefox to keep selection range in sync
+    // Keep selection range in sync
     addListener(inputElement, 'select', onSelectionChanged);
     addListener(inputElement, 'keyup', onSelectionChanged);
     addListener(inputElement, 'mousedown', onSelectionChanged);
-
-    // TODO
-    // Reset on blur, to prevent range from being deleted on drop-from-outside (Firefox)
-    // addListener(inputElement, 'blur', function (e) {
-    //   editor.setSelectionRange(0, 0);
-    //   updateDebugInfo();
-    // });
   }
 
   function $onDestroy() {
@@ -86,8 +80,20 @@ function InputController($element, $scope, $timeout, atmention) {
   }
 
   function onSelectionChanged(evt) {
+    editor.handleSelectionChangeEvent(inputElement.selectionStart, inputElement.selectionEnd);
+
+    // Wait until all selection changes have fired
+    numUnappliedSelectionChanges += 1;
+
     $scope.$evalAsync(function () {
-      editor.setSelectionRange(inputElement.selectionStart, inputElement.selectionEnd);
+      numUnappliedSelectionChanges -= 1;
+
+      if (!numUnappliedSelectionChanges && forcedCaretPositionAfterNextSelectionChanges !== null) {
+        inputElement.selectionStart = forcedCaretPositionAfterNextSelectionChanges;
+        inputElement.selectionEnd = forcedCaretPositionAfterNextSelectionChanges;
+        forcedCaretPositionAfterNextSelectionChanges = null;
+      }
+
       detectSearchQuery();
       updateDebugInfo();
     });
@@ -98,8 +104,13 @@ function InputController($element, $scope, $timeout, atmention) {
     var start = evt.target.selectionStart;
     var end = evt.target.selectionEnd;
 
+    editor.handleInputEvent(text, start, end);
+
+    // Force caret position on next selectionchange event
+    // TODO only needed if a mention was inserted/deleted
+    forcedCaretPositionAfterNextSelectionChanges = editor.getSelectionRange().end;
+
     $scope.$evalAsync(function () {
-      editor.applyDisplayValue(text, start, end);
       updateDisplay();
       detectSearchQuery();
       updateDebugInfo();
@@ -170,7 +181,8 @@ function InputController($element, $scope, $timeout, atmention) {
     else {
       ctrl.searchHook(queryInfo.query).then(function (searchResults) {
         if (!searchResults) {
-          console.error('Search callback must return an array');
+          // Explicit log
+          console.error('[atmention] Search callback must return an array');
           return;
         }
 
@@ -225,6 +237,9 @@ function InputController($element, $scope, $timeout, atmention) {
     clearSuggestions();
     updateDisplay();
     inputElement.focus();
+
+    // Force caret position on next selectionchange event
+    forcedCaretPositionAfterNextSelectionChanges = editor.getSelectionRange().end;
   }
 
   function clearSuggestions() {
@@ -235,9 +250,8 @@ function InputController($element, $scope, $timeout, atmention) {
 
   function updateDisplay() {
     inputElement.value = editor.getDisplay();
-    inputElement.selectionStart = editor.getSelectionRange().start;
-    inputElement.selectionEnd = editor.getSelectionRange().end;
 
+    // Update highlighter
     ctrl.segments = editor.getSegments();
 
     if (ctrl.ngModel) {
@@ -246,8 +260,10 @@ function InputController($element, $scope, $timeout, atmention) {
   }
 
   function updateDebugInfo() {
-    ctrl.selectionStart = '' + editor.getSelectionRange().start;
-    ctrl.selectionEnd = '' + editor.getSelectionRange().end;
+    var selectionRange = editor.getSelectionRange();
+    ctrl.debugInfo = [
+      'selection: [' + selectionRange.start + ',' + selectionRange.end + ']'
+    ].join('; ');
   }
 
 }

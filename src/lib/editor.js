@@ -1,6 +1,7 @@
 'use strict';
 
 var util = require('./util');
+var log = require('./log');
 
 editorFactory.defaultOptions = {
   pattern: '[__DISPLAY__](__ID__)'
@@ -22,8 +23,8 @@ function editorFactory(options) {
   editor.getDisplay = getDisplay;
   editor.getMarkup = getMarkup;
   editor.getSelectionRange = getSelectionRange;
-  editor.setSelectionRange = setSelectionRange;
-  editor.applyDisplayValue = applyDisplayValue;
+  editor.handleSelectionChangeEvent = handleSelectionChangeEvent;
+  editor.handleInputEvent = handleInputEvent;
   editor.detectSearchQuery = detectSearchQuery;
   editor.insertMarkup = insertMarkup;
 
@@ -146,133 +147,150 @@ function editorFactory(options) {
     };
   }
 
-  function setSelectionRange(start, end) {
+  function handleSelectionChangeEvent(start, end) {
     selectionStart = start;
     selectionEnd = end;
+    return editor;
   }
 
   /**
-   * Applies changes in the (user-entered) display value to the (internal) markup + updates displayValue if any mentions
-   * were deleted.
+   * Applies changes in the display value to the markup. When any mentions were deleted, the display value and selection
+   * range will also be updated, so afterwards, those need to be re-applied to the textarea.
    *
-   * @param {string} value displayValue after the change
-   * @param {int} start start of selection after the change
-   * @param {int} end end of selection after the change
+   * @param {string} value displayValue after the event
+   * @param {int} start start of selection after the event
+   * @param {int} end end of selection after the event
    */
-  function applyDisplayValue(value, start, end) {
+  function handleInputEvent(value, start, end) {
     var delta = value.length - displayValue.length;
-    var xStart, xEnd, xValue; // indexes and value of the deleted part
-    var iStart, iEnd, iValue; // indexes and value of the inserted part
-    var oldDisplayValue = displayValue;
+    var deletedText, deleteStart, deleteEnd;
+    var insertedText, insertStart, insertEnd;
+    var rangeInDisplay, rangeInMarkup;
+    var rangeInDisplayAfterMentionsDeleted;
     var newMarkupValue;
-    var nextSelectionStart = start;
-    var nextSelectionEnd = end;
+    var newCaretPosition;
 
-    // console.log('[*] APPLY', 'prevSelection:', selectionStart, selectionEnd, 'currSelection:', start, end, 'delta', delta, 'from: "' + displayValue + '"', 'to: "' + value + '"');
+    log.debug('[*] Applying', 'prevSelection:', selectionStart, selectionEnd, 'currSelection:', start, end, 'delta', delta, 'from: "' + displayValue + '"', 'to: "' + value + '"');
 
-    if (start < end) {
-      // console.log('CURR=RANGE');
-
-      iStart = start;
-      iEnd = end;
-
-      if (selectionStart < selectionEnd) {
-        // console.log('PREV=RANGE');
-        xStart = -1;
-        xEnd = -1;
-      } else {
-        // console.log('PREV=CARET');
-        xEnd = selectionEnd;
-        xStart = xEnd - (iEnd - iStart - delta);
-      }
-    }
-    else {
-      // console.log('CURR=CARET');
-
-      if (selectionStart < selectionEnd) {
-        // console.log('PREV=RANGE');
-
-        // Deleted part
-        xStart = selectionStart;
-        xEnd = selectionEnd;
-
-        // Inserted part
-        iEnd = end;
-        iStart = iEnd - ((xEnd - xStart) + delta); // length of deleted part
+    /**
+     * Determine what was deleted and/or inserted
+     */
+    if (selectionStart < selectionEnd) {
+      if (start < end) {
+        log.debug('RANGE --> RANGE');
+        // RANGE --> RANGE
+        // Happens when: ?
+        insertStart = start;
+        insertEnd = end;
+        deleteStart = -1;
+        deleteEnd = -1;
       }
       else {
-        // console.log('PREV=CARET');
+        log.debug('RANGE --> CARET');
+        // RANGE --> CARET
+        // Happens when: delete/cut selection, overwrite selection by typing
 
+        // Deleted part is the previous selection
+        deleteStart = selectionStart;
+        deleteEnd = selectionEnd;
+
+        // Reverse-engineer inserted part
+        insertStart = selectionStart;
+        insertEnd = selectionEnd + delta;
+      }
+    } else {
+      if (start < end) {
+        log.debug('CARET --> RANGE');
+        // CARET --> RANGE
+        // Happens when: IME composition/word replacement
+
+        // Inserted part is the current selection
+        insertStart = start;
+        insertEnd = end;
+
+        // Reverse-engineer deleted part based on current selection
+        deleteStart = start;
+        deleteEnd = end - delta;
+      }
+      else {
+        log.debug('CARET --> CARET');
+        // CARET --> CARET
+        // Happens when: type character, paste at caret, delete, backspace
         if (delta < 0) {
-          // Deleted part. Use min/max to handle forward/backward deletion (DEL vs. BACKSPACE)
-          xStart = Math.min(selectionStart, end);
-          xEnd = Math.max(selectionEnd, xStart - delta);
+          // Delete. Use min/max to handle forward/backward deletion (DEL vs. BACKSPACE)
+          insertStart = -1;
+          insertEnd = -1;
+          deleteStart = Math.min(selectionStart, end);
+          deleteEnd = Math.max(selectionEnd, deleteStart - delta);
         } else {
-          // Inserted part
-          iEnd = end;
-          iStart = iEnd - delta;
+          // Insert
+          insertEnd = end;
+          insertStart = insertEnd - delta;
+          deleteStart = -1;
+          deleteEnd = -1;
         }
       }
     }
 
-    if (xStart < xEnd) {
-      xValue = displayValue.slice(xStart, xEnd);
-    }
+    deletedText = (deleteStart < deleteEnd) ? displayValue.slice(deleteStart, deleteEnd) : '';
+    insertedText = (insertStart < insertEnd) ? value.slice(insertStart, insertEnd) : '';
 
-    if (iStart < iEnd) {
-      iValue = value.slice(iStart, iEnd);
-    }
-
-    // console.log('Deleted "' + xValue + '"', xStart < xEnd ? xStart + ',' + xEnd : '');
-    // console.log('Inserted "' + iValue + '"', iStart < iEnd ? iStart + ',' + iEnd : '');
+    log.debug('Deleted "' + deletedText + '"', deleteStart < deleteEnd ? deleteStart + ',' + deleteEnd : '');
+    log.debug('Inserted "' + insertedText + '"', insertStart < insertEnd ? insertStart + ',' + insertEnd : '');
 
     // Update markup
-    // When nothing was deleted, start from the insert position
-    var displayRange = {
-      start: xValue ? xStart : iStart,
-      end: xValue ? xEnd : iStart
-    };
-    var mappedRange = mapRangeToMarkup(displayRange);
-    newMarkupValue = util.spliceString(markupValue, mappedRange.start, mappedRange.end, iValue);
+    if (deletedText) {
+      rangeInDisplay = { start: deleteStart, end: deleteEnd };
+    } else {
+      rangeInDisplay = { start: insertStart, end: insertStart };
+    }
+
+    rangeInMarkup = mapRangeToMarkup(rangeInDisplay);
+    newMarkupValue = util.spliceString(markupValue, rangeInMarkup.start, rangeInMarkup.end, insertedText);
 
     // Update display value, in case mentions were deleted
     parseMarkup(newMarkupValue);
 
-    // Update selection range when a mention was deleted
+    // Update caret position in case mentions were deleted (places caret at end of inserted part)
     if (displayValue.length !== value.length) {
-      var newDisplayRange = mapRangeToDisplay({ start: mappedRange.start, end: mappedRange.start });
-      nextSelectionStart = newDisplayRange.start + (iValue ? iValue.length : 0);
-      nextSelectionEnd = newDisplayRange.start + (iValue ? iValue.length : 0);
+      rangeInDisplayAfterMentionsDeleted = mapRangeToDisplay({ start: rangeInMarkup.start, end: rangeInMarkup.end });
+      newCaretPosition = rangeInDisplayAfterMentionsDeleted.start + insertedText.length;
+      selectionStart = newCaretPosition;
+      selectionEnd = newCaretPosition;
+    } else {
+      selectionStart = start;
+      selectionEnd = end;
     }
 
-    // Update selection range
-    selectionStart = nextSelectionStart;
-    selectionEnd = nextSelectionEnd;
+    log.debug('Done applying, internal selection is now', selectionStart, selectionEnd);
+
+    return editor;
   }
 
   /**
-   * Determines if the suggestions should be triggered.
-   * Searches for a sequence, returns only if the caret is right behind it.
+   * Determines if the suggestions should be triggered. Searches for a sequence, returns only if the caret is right
+   * behind it.
    *
-   * @param {string} value Text to search
-   * @param {int} newSelectionStart
-   * @param {int} newSelectionStart
-   *
+   * @param {string} value Current textarea value
    * @returns {QueryInfo} Info for inserting a mention later
    */
-  function detectSearchQuery(value, newSelectionStart, newSelectionEnd) {
+  function detectSearchQuery(value) {
     // TODO improve regex + make configurable
     var mentionRegex = new RegExp('@([A-Za-z0-9_]+)', 'g'); // e.g. matches @user_name
+    var caretPosition;
     var match;
     var matchedText;
     var query;
     var queryInfo;
 
+    caretPosition = selectionEnd;
+
     while (!queryInfo && (match = mentionRegex.exec(value))) {
       matchedText = match[0]; // including @ prefix
       query = match[1]; // capture group
 
-      if (newSelectionStart > match.index && newSelectionStart <= match.index + matchedText.length) {
+      // Report back when caret is inside or right after the matched text
+      if (caretPosition > match.index && caretPosition <= match.index + matchedText.length) {
         queryInfo = {
           matchedText: matchedText,
           query: query,
@@ -286,18 +304,16 @@ function editorFactory(options) {
   }
 
   /**
-   * Adds a mention at the current cursor position
-   *
-   * @param data.id
-   * @param data.display
+   * Adds a mention between the given positions
    */
   function insertMarkup(display, id, start, end) {
     var markup = util.createMarkup(config.pattern, display, id);
-    var markupRange = mapRangeToMarkup({ start: start, end: end });
+    var markupRange;
     var insertedRange;
     var newMarkupValue;
 
-    // Insert into markup
+    // Insert markup
+    markupRange = mapRangeToMarkup({ start: start, end: end });
     newMarkupValue = util.spliceString(markupValue, markupRange.start, markupRange.end, markup);
 
     // Update display value
@@ -324,7 +340,6 @@ function editorFactory(options) {
    * if it overlaps a mention.
    */
   function mapRange(range, mapFrom, mapTo) {
-    var rangeLength = range.start - range.end;
     var start;
     var end;
     var delta;

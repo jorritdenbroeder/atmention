@@ -5,5 +5,7 @@
   },
   "node": true,
   "browser": true,
-  "jasmine": true
+  "jasmine": true,
+
+  "unused":"vars"
 }

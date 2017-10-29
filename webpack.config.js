@@ -6,7 +6,7 @@ const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = () => {
   return {
-    entry: './src/frameworks/angularjs',
+    entry: './src/angularjs',
     output: {
       path: path.resolve('./dist'),
       filename: 'atmention-angularjs.min.js'

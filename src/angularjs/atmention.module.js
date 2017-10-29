@@ -1,6 +1,6 @@
 'use strict';
 
-var atmention = require('../../core');
+var atmention = require('../core');
 
 angular.module('atmentionModule', [])
   .factory('atmention', atmentionFactory);

@@ -1,5 +1,7 @@
 'use strict';
 
+var textEditor = require('./editor');
+
 var KEY = {
   ENTER: 13,
   ESCAPE: 27,
@@ -7,51 +9,35 @@ var KEY = {
   DOWN: 40
 };
 
-angular.module('atmentionModule')
-  .component('atmentionTextarea', {
-    require: {
-      ngModel: '?ngModel'
-    },
-    template: require('./input.component.html'),
-    controller: InputController,
-    bindings: {
-      placeholder: '@',
-      searchHook: '<search'
-    }
-  });
-
-function InputController($element, $scope, $timeout, atmention) {
-  var ctrl = this;
-  var destroyQueue = [];
+/**
+ * Textarea component with atmention functionality
+ *
+ * @param config
+ * @param config.inputElement textarea for user input
+ * @param config.highlighterElement DOM element for highlighting mentions
+ * @param config.hooks callbacks fired when the view needs to be updeted
+ */
+module.exports = function (config) {
+  var instance = {};
   var editor;
-  var inputElement;
-  var highlighterElement;
+  var inputElement = config.inputElement;
+  var highlighterElement = config.highlighterElement;
+  var destroyQueue = [];
   var lastQuery;
+  var suggestions = [];
+  var activeSuggestionIndex = -1;
+
   var forcedCaretPositionAfterNextSelectionChanges = null;
   var numUnappliedSelectionChanges = 0;
 
-  ctrl.debugInfo = '';
-  ctrl.suggestions = [];
-  ctrl.activeSuggestionIndex = -1;
-  ctrl.segments = []; // for highlighter
-  ctrl.$onInit = $onInit;
-  ctrl.$onDestroy = $onDestroy;
-  ctrl.applySuggestion = applySuggestion;
+  instance.destroy = destroy;
+  instance.setMarkup = setMarkup;
+  instance.applySuggestion = applySuggestion;
 
-  function $onInit() {
-    editor = atmention.editor();
+  init();
 
-    inputElement = $element.find('textarea')[0];
-    highlighterElement = $element.find('atmention-highlighter')[0];
-
-    // Reload markup whenever the ngModel value changes
-    if (ctrl.ngModel) {
-      ctrl.ngModel.$formatters.push(function (value) {
-        editor.parseMarkup(value || '');
-        updateDisplay();
-        updateDebugInfo();
-      });
-    }
+  function init () {
+    editor = textEditor();
 
     // Register event listeners
     addListener(document, 'selectionchange', onSelectionChanged);
@@ -66,7 +52,7 @@ function InputController($element, $scope, $timeout, atmention) {
     addListener(inputElement, 'mousedown', onSelectionChanged);
   }
 
-  function $onDestroy() {
+  function destroy() {
     destroyQueue.forEach(function (func) {
       func();
     });
@@ -79,13 +65,26 @@ function InputController($element, $scope, $timeout, atmention) {
     });
   }
 
+  function async(func) {
+    if (config.hooks.angularAsync) {
+      config.hooks.angularAsync(func);
+    } else {
+      setTimeout(func, 0);
+    }
+  }
+
+  function setMarkup (markup) {
+    editor.parseMarkup(markup);
+    updateDisplay();
+  }
+
   function onSelectionChanged(evt) {
     editor.handleSelectionChangeEvent(inputElement.selectionStart, inputElement.selectionEnd);
 
     // Wait until all selection changes have fired
     numUnappliedSelectionChanges += 1;
 
-    $scope.$evalAsync(function () {
+    async(function () {
       numUnappliedSelectionChanges -= 1;
 
       if (!numUnappliedSelectionChanges && forcedCaretPositionAfterNextSelectionChanges !== null) {
@@ -110,7 +109,7 @@ function InputController($element, $scope, $timeout, atmention) {
     // TODO only needed if a mention was inserted/deleted
     forcedCaretPositionAfterNextSelectionChanges = editor.getSelectionRange().end;
 
-    $scope.$evalAsync(function () {
+    async(function () {
       updateDisplay();
       detectSearchQuery();
       updateDebugInfo();
@@ -125,38 +124,45 @@ function InputController($element, $scope, $timeout, atmention) {
 
   function onKeyDown(evt) {
     // Do nothing when there are no suggestions
-    if (!ctrl.suggestions || !ctrl.suggestions.length) {
+    if (!suggestions || !suggestions.length) {
       return;
     }
 
     switch (evt.keyCode) {
       case KEY.UP: {
         evt.preventDefault();
-        $scope.$evalAsync(function () { moveActiveSuggestionIndex(-1); });
+        async(function () { moveActiveSuggestionIndex(-1); });
         return;
       }
       case KEY.DOWN: {
         evt.preventDefault();
-        $scope.$evalAsync(function () { moveActiveSuggestionIndex(+1); });
+        async(function () { moveActiveSuggestionIndex(+1); });
         return;
       }
       case KEY.ENTER: {
         evt.preventDefault();
-        $scope.$evalAsync(function () { applySuggestion(ctrl.activeSuggestion); });
+        async(function () { applySuggestion(suggestions[activeSuggestionIndex]); });
         return;
       }
       case KEY.ESCAPE: {
         evt.preventDefault();
-        $scope.$evalAsync(clearSuggestions);
+        async(clearSuggestions);
         return;
       }
     }
   }
 
+  function clearSuggestions() {
+    suggestions = [];
+    activeSuggestionIndex = -1;
+    config.hooks.updateSuggestions(suggestions);
+    config.hooks.updateActiveSuggestionIndex(activeSuggestionIndex);
+}
+
   function onBlur() {
     // Using timeout to prevent active suggestion from being reset before we had a chance to handle it.
     // FIXME: solve without using a timeout
-    $timeout(clearSuggestions, 250);
+    setTimeout(clearSuggestions, 250);
   }
 
   // Scans for new @mention search query right before caret
@@ -171,7 +177,7 @@ function InputController($element, $scope, $timeout, atmention) {
   }
 
   function handleQueryChanged(queryInfo) {
-    if (!ctrl.searchHook) {
+    if (!config.hooks.search) {
       return;
     }
 
@@ -179,7 +185,7 @@ function InputController($element, $scope, $timeout, atmention) {
       clearSuggestions();
     }
     else {
-      ctrl.searchHook(queryInfo.query).then(function (searchResults) {
+      config.hooks.search(queryInfo.query).then(function (searchResults) {
         if (!searchResults) {
           // Explicit log
           console.error('[atmention] Search callback must return an array');
@@ -195,33 +201,41 @@ function InputController($element, $scope, $timeout, atmention) {
           clearSuggestions();
         } else {
           // Show suggestions
-          ctrl.suggestions = searchResults.map(function (searchResult) {
+          suggestions = searchResults.map(function (searchResult) {
             var suggestion = {
               queryInfo: queryInfo,
               searchResult: searchResult
             };
             return suggestion;
           });
-          ctrl.activeSuggestionIndex = 0;
-          ctrl.activeSuggestion = ctrl.suggestions[0];
+          activeSuggestionIndex = 0;
+          config.hooks.updateSuggestions(suggestions);
+          config.hooks.updateActiveSuggestionIndex(activeSuggestionIndex);
         }
       });
     }
   }
 
   function moveActiveSuggestionIndex(direction) {
-    var index = ctrl.activeSuggestionIndex + direction;
+    var index = activeSuggestionIndex + direction;
 
     if (index < 0) {
       index = 0;
     }
 
-    if (index > ctrl.suggestions.length - 1) {
-      index = ctrl.suggestions.length - 1;
+    if (index > suggestions.length - 1) {
+      index = suggestions.length - 1;
     }
 
-    ctrl.activeSuggestionIndex = index;
-    ctrl.activeSuggestion = ctrl.suggestions[index];
+    activeSuggestionIndex = index;
+
+    config.hooks.updateActiveSuggestionIndex(activeSuggestionIndex);
+  }
+
+  function updateDisplay() {
+    inputElement.value = editor.getDisplay();
+    config.hooks.updateHighlighter(editor.getSegments());
+    config.hooks.updateMarkup(editor.getMarkup());
   }
 
   /**
@@ -242,28 +256,13 @@ function InputController($element, $scope, $timeout, atmention) {
     forcedCaretPositionAfterNextSelectionChanges = editor.getSelectionRange().end;
   }
 
-  function clearSuggestions() {
-    ctrl.suggestions = [];
-    ctrl.activeSuggestion = null;
-    ctrl.activeSuggestionIndex = -1;
-  }
-
-  function updateDisplay() {
-    inputElement.value = editor.getDisplay();
-
-    // Update highlighter
-    ctrl.segments = editor.getSegments();
-
-    if (ctrl.ngModel) {
-      ctrl.ngModel.$setViewValue(editor.getMarkup());
-    }
-  }
-
   function updateDebugInfo() {
     var selectionRange = editor.getSelectionRange();
-    ctrl.debugInfo = [
+    var debugInfo = [
       'selection: [' + selectionRange.start + ',' + selectionRange.end + ']'
     ].join('; ');
+    config.hooks.updateDebugInfo(debugInfo);
   }
 
-}
+  return instance;
+};

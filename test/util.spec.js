@@ -1,10 +1,10 @@
 'use strict';
 
-var lib = require('../src/lib');
+var core = require('../src/core');
 
 describe('Util', function () {
 
-  var util = lib.util;
+  var util = core.util;
   var mentionRegexTemplate = '[__DISPLAY__](__ID__)';
   var mentionRegex = util.regexFromTemplate(mentionRegexTemplate);
 

@@ -1,10 +1,10 @@
 'use strict';
 
-var lib = require('../src/lib');
+var core = require('../src/core');
 
 describe('Editor', function () {
 
-  var editor = lib.editor({
+  var editor = core.editor({
     pattern: '[__DISPLAY__](__ID__)'
   });
 

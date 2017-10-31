@@ -9,28 +9,40 @@ angular.module('appModule')
 function RootController($timeout, atmention) {
   var ctrl = this;
 
-  ctrl.markup = ''; // It\'s amazing, @[Mike](mailto:mike@example.com)! @w';
+  var data = [
+    {
+      name: 'Wim',
+      id: 'wim@example.com'
+    },
+    {
+      name: 'Menno',
+      id: 'menno@example.com'
+    },
+    {
+      name: 'Gert',
+      id: 'gert@example.com'
+    },
+    {
+      name: 'Alex',
+      id: 'alex@example.com'
+    }
+  ];
+
+  ctrl.markup = '';
 
   ctrl.search = function (query) {
     return $timeout(function () {
-      return [{
-        label: '<b>' + query + '</b>',
-        display: query,
-        id: query + '@example.com'
-      }, {
-        label: 'Label2',
-        display: query,
-        id: query + '@example.com'
-      }, {
-        label: 'Label3',
-        display: query,
-        id: query + '@example.com'
-      },{
-        label: 'Label4',
-        display: query,
-        id: query + '@example.com'
-      }];
-    });
+      return data.filter(function (item) {
+        return query === 'all' || item.name.toLowerCase().startsWith(query);
+      })
+        .map(function (item) {
+          return {
+            label: item.name,
+            display: item.name,
+            id: item.id
+          };
+        });
+    }, 250);
   };
 
   ctrl.save = function () {

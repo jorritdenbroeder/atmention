@@ -5,6 +5,7 @@ angular.module('atmentionModule')
     template: require('./suggestions.component.html'),
     controller: SuggestionsController,
     bindings: {
+      query: '<',
       suggestions: '<',
       activeSuggestionIndex: '<',
       onSelect: '<'

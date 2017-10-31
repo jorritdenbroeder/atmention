@@ -1,3 +1,7 @@
+<div class="atmentionNoResults" ng-if="!$ctrl.suggestions.length">
+  Nothing found for &quot;<b>{{$ctrl.query}}</b>&quot;
+</div>
+
 <ul ng-if="$ctrl.suggestions.length" class="atmentionSuggestionList">
   <li class="atmentionSuggestionListItem"
     ng-class="{ active: $index === $ctrl.visibleSuggestionIndex }"

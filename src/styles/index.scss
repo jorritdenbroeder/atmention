@@ -55,7 +55,9 @@ atmention-textarea {
 
   &SuggestionsContainer {
     display: block;
-    // height: 64px;
+  }
+
+  &NoResults {
   }
 
   &SuggestionList {

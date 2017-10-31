@@ -4,6 +4,8 @@
 </div>
 
 <atmention-suggestions class="atmentionSuggestionsContainer"
+  ng-if="$ctrl.suggestionsVisible"
+  query="$ctrl.query"
   suggestions="$ctrl.suggestions"
   active-suggestion-index="$ctrl.activeSuggestionIndex"
   on-select="$ctrl.applySuggestion"></atmention-suggestions>

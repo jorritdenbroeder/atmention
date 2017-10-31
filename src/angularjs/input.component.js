@@ -19,6 +19,7 @@ function InputController($element, $scope, $timeout, atmention) {
 
   ctrl.debugInfo = '';
   ctrl.suggestions = [];
+  ctrl.suggestionsVisible = false;
   ctrl.activeSuggestionIndex = -1;
   ctrl.segments = []; // for highlighter
 
@@ -32,7 +33,8 @@ function InputController($element, $scope, $timeout, atmention) {
       highlighterElement: $element.find('atmention-highlighter')[0],
       hooks: {
         angularAsync: evalAsync,
-        search: ctrl.searchHook,
+        search: search,
+        toggleSuggestions: toggleSuggestions,
         updateMarkup: updateMarkup,
         updateHighlighter: updateHighlighter,
         updateSuggestions: updateSuggestions,
@@ -57,6 +59,15 @@ function InputController($element, $scope, $timeout, atmention) {
 
   function evalAsync(func) {
     $scope.$evalAsync(func);
+  }
+
+  function search(query) {
+    ctrl.query = query;
+    return ctrl.searchHook(query);
+  }
+
+  function toggleSuggestions(bool) {
+    ctrl.suggestionsVisible = bool;
   }
 
   function updateMarkup(markup) {

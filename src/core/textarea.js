@@ -25,6 +25,7 @@ module.exports = function (config) {
   var destroyQueue = [];
   var lastQuery;
   var suggestions = [];
+  var suggestionsVisible = false;
   var activeSuggestionIndex = -1;
 
   var forcedCaretPositionAfterNextSelectionChanges = null;
@@ -36,7 +37,7 @@ module.exports = function (config) {
 
   init();
 
-  function init () {
+  function init() {
     editor = textEditor();
 
     // Register event listeners
@@ -73,7 +74,7 @@ module.exports = function (config) {
     }
   }
 
-  function setMarkup (markup) {
+  function setMarkup(markup) {
     editor.parseMarkup(markup);
     updateDisplay();
   }
@@ -146,10 +147,18 @@ module.exports = function (config) {
       }
       case KEY.ESCAPE: {
         evt.preventDefault();
-        async(clearSuggestions);
+        async(function () { setSuggestionsVisibility(false); });
         return;
       }
     }
+  }
+
+  function setSuggestionsVisibility(bool) {
+    if (suggestionsVisible === bool) {
+      return;
+    }
+    suggestionsVisible = bool;
+    config.hooks.toggleSuggestions(suggestionsVisible);
   }
 
   function clearSuggestions() {
@@ -157,12 +166,16 @@ module.exports = function (config) {
     activeSuggestionIndex = -1;
     config.hooks.updateSuggestions(suggestions);
     config.hooks.updateActiveSuggestionIndex(activeSuggestionIndex);
-}
+  }
 
   function onBlur() {
     // Using timeout to prevent active suggestion from being reset before we had a chance to handle it.
     // FIXME: solve without using a timeout
-    setTimeout(clearSuggestions, 250);
+    setTimeout(function () {
+      async(function () {
+        setSuggestionsVisibility(false);
+      });
+    }, 250);
   }
 
   // Scans for new @mention search query right before caret
@@ -177,43 +190,50 @@ module.exports = function (config) {
   }
 
   function handleQueryChanged(queryInfo) {
+    setSuggestionsVisibility(false);
+
     if (!config.hooks.search) {
       return;
     }
 
     if (!queryInfo.query) {
+      return;
+    }
+
+    config.hooks.search(queryInfo.query).then(function (searchResults) {
+      if (!searchResults) {
+        // Explicitly log
+        console.error('[atmention] Search callback must return an array');
+        return;
+      }
+
+      // Do nothing if query has changed in the mean time
+      if (queryInfo.query !== lastQuery) {
+        return;
+      }
+
+      handleSearchResults(searchResults, queryInfo);
+    });
+  }
+
+  function handleSearchResults(searchResults, queryInfo) {
+    if (!searchResults.length) {
       clearSuggestions();
+      setSuggestionsVisibility(true);
+      return;
     }
-    else {
-      config.hooks.search(queryInfo.query).then(function (searchResults) {
-        if (!searchResults) {
-          // Explicit log
-          console.error('[atmention] Search callback must return an array');
-          return;
-        }
 
-        // Do nothing if query has changed in the mean time
-        if (queryInfo.query !== lastQuery) {
-          return;
-        }
+    suggestions = searchResults.map(function (searchResult) {
+      return {
+        queryInfo: queryInfo,
+        searchResult: searchResult
+      };
+    });
 
-        if (!searchResults.length) {
-          clearSuggestions();
-        } else {
-          // Show suggestions
-          suggestions = searchResults.map(function (searchResult) {
-            var suggestion = {
-              queryInfo: queryInfo,
-              searchResult: searchResult
-            };
-            return suggestion;
-          });
-          activeSuggestionIndex = 0;
-          config.hooks.updateSuggestions(suggestions);
-          config.hooks.updateActiveSuggestionIndex(activeSuggestionIndex);
-        }
-      });
-    }
+    activeSuggestionIndex = 0;
+    config.hooks.updateSuggestions(suggestions);
+    config.hooks.updateActiveSuggestionIndex(activeSuggestionIndex);
+    setSuggestionsVisibility(true);
   }
 
   function moveActiveSuggestionIndex(direction) {
@@ -248,7 +268,7 @@ module.exports = function (config) {
    */
   function applySuggestion(suggestion) {
     editor.insertMarkup(suggestion.searchResult.display, suggestion.searchResult.id, suggestion.queryInfo.start, suggestion.queryInfo.end);
-    clearSuggestions();
+    setSuggestionsVisibility(false);
     updateDisplay();
     inputElement.focus();
 

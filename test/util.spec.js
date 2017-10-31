@@ -9,7 +9,7 @@ describe('Util', function () {
   var mentionRegex = util.regexFromTemplate(mentionRegexTemplate);
 
   it('Creates regex from template', function () {
-    expect(mentionRegex.source).toEqual('\\[([a-zA-Z0-9 :.@]+?)\\]\\(([a-zA-Z0-9 @:.-]+?)\\)'); // double-escaped backslashes
+    expect(mentionRegex.source).toEqual('\\[([a-zA-Z0-9_ :.@]+?)\\]\\(([a-zA-Z0-9_ @:.-]+?)\\)'); // double-escaped backslashes
   });
 
   it('Splices a string', function () {

@@ -6,7 +6,7 @@ angular.module('appModule')
     controller: RootController
   });
 
-function RootController($timeout) {
+function RootController($timeout, atmention) {
   var ctrl = this;
 
   ctrl.markup = ''; // It\'s amazing, @[Mike](mailto:mike@example.com)! @w';
@@ -32,4 +32,10 @@ function RootController($timeout) {
       }];
     });
   };
+
+  ctrl.save = function () {
+    var mentions = atmention.extractMentions(ctrl.markup);
+    console.log(mentions);
+  };
+
 }

@@ -89,7 +89,6 @@ module.exports = function (config) {
 
   function onSelectionChanged(/* evt */) {
     editor.handleSelectionChangeEvent(inputElement.selectionStart, inputElement.selectionEnd);
-    setSuggestionsCoords();
 
     // Wait until all selection changes have fired (for IME composition input events, browser fires multiple selection
     // changes
@@ -105,6 +104,7 @@ module.exports = function (config) {
       }
 
       updateHighlights();
+      setSuggestionsCoords();
       detectSearchQuery();
       updateDebugInfo();
     }, 0);
@@ -319,6 +319,10 @@ module.exports = function (config) {
   }
 
   function updateDebugInfo() {
+    if (!config.hooks.updateDebugInfo) {
+      return;
+    }
+
     var selectionRange = editor.getSelectionRange();
     var debugInfo = [
       'selection: [' + selectionRange.start + ',' + selectionRange.end + ']'

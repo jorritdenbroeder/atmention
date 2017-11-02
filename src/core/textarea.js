@@ -87,7 +87,7 @@ module.exports = function (config) {
     updateHighlights();
   }
 
-  function onSelectionChanged(evt) {
+  function onSelectionChanged(/* evt */) {
     editor.handleSelectionChangeEvent(inputElement.selectionStart, inputElement.selectionEnd);
     setSuggestionsCoords();
 
@@ -127,7 +127,7 @@ module.exports = function (config) {
     updateDebugInfo();
   }
 
-  function onInputElementScrolled(evt) {
+  function onInputElementScrolled(/* evt */) {
     // Sync highlighter scroll position
     highlighterElement.scrollTop = inputElement.scrollTop;
     highlighterElement.scrollLeft = inputElement.scrollLeft;
@@ -228,6 +228,7 @@ module.exports = function (config) {
     config.hooks.search(queryInfo.query).then(function (searchResults) {
       if (!searchResults) {
         // Explicitly log
+        /* eslint no-console:0 */
         console.error('[atmention] Search callback must return an array');
         return;
       }

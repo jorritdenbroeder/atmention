@@ -26,6 +26,7 @@ module.exports = function (config) {
   var editor;
   var inputElement = config.inputElement;
   var highlighterElement = config.highlighterElement;
+  var suggestionsElement = config.suggestionsElement;
   var markupClass = config.markupClass || DEFAULT_MARKUP_CLASS;
   var caretClass = config.caretClass || DEFAULT_CARET_CLASS;
   var destroyQueue = [];
@@ -83,10 +84,12 @@ module.exports = function (config) {
   function setMarkup(markup) {
     editor.parseMarkup(markup);
     updateDisplay();
+    updateHighlights();
   }
 
   function onSelectionChanged(evt) {
     editor.handleSelectionChangeEvent(inputElement.selectionStart, inputElement.selectionEnd);
+    setSuggestionsCoords();
 
     // Wait until all selection changes have fired (for IME composition input events, browser fires multiple selection
     // changes
@@ -169,6 +172,17 @@ module.exports = function (config) {
     async(function () {
       config.hooks.toggleSuggestions(suggestionsVisible);
     });
+  }
+
+  function setSuggestionsCoords() {
+    var caret = highlighterElement.querySelector('.' + caretClass);
+    var coords = caret.getBoundingClientRect();
+    var inputElmCoords = inputElement.getBoundingClientRect();
+    var verticalOffset = 4;
+
+    suggestionsElement.style.top = coords.bottom + verticalOffset + 'px';
+    suggestionsElement.style.left = inputElmCoords.left + 'px';
+    suggestionsElement.style.width = inputElmCoords.width + 'px';
   }
 
   function clearSuggestions() {

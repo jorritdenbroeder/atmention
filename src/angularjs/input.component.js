@@ -13,8 +13,9 @@ angular.module('atmentionModule')
     }
   });
 
-function InputController($element, $scope, $timeout, atmention) {
+function InputController($element, $scope, $timeout, $compile, atmention) {
   var ctrl = this;
+  var suggestionsElement;
   var atmentionTextarea;
 
   ctrl.debugInfo = '';
@@ -28,9 +29,14 @@ function InputController($element, $scope, $timeout, atmention) {
   ctrl.applySuggestion = applySuggestion;
 
   function $onInit() {
+    // Render suggestions overlay in body
+    suggestionsElement = $compile(require('./suggestions-overlay.html'))($scope);
+    angular.element(document.body).append(suggestionsElement);
+
     var atmentionConfig = {
       inputElement: $element.find('textarea')[0],
       highlighterElement: $element.find('atmention-highlighter')[0],
+      suggestionsElement: suggestionsElement[0],
       hooks: {
         angularAsync: evalAsync,
         search: search,
@@ -53,6 +59,7 @@ function InputController($element, $scope, $timeout, atmention) {
   }
 
   function $onDestroy() {
+    angular.element(suggestionsElement).remove();
     atmentionTextarea.destroy();
   }
 

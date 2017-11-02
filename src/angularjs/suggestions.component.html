@@ -4,8 +4,8 @@
 
 <ul ng-if="$ctrl.suggestions.length" class="atmentionSuggestionList">
   <li class="atmentionSuggestionListItem"
-    ng-class="{ active: $index === $ctrl.visibleSuggestionIndex }"
-    ng-repeat="suggestion in $ctrl.visibleSuggestions"
+    ng-class="{ active: $index === $ctrl.activeSuggestionIndex }"
+    ng-repeat="suggestion in $ctrl.suggestions"
     ng-click="$ctrl.onSelect(suggestion, $event)"
     ng-bind-html="suggestion.searchResult.label">
   </li>

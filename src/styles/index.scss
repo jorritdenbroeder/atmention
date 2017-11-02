@@ -41,12 +41,10 @@ atmention-textarea {
     word-wrap: break-word;
 
     span {
-      white-space: pre-wrap;
-      word-wrap: break-word;
       visibility: hidden;
     }
 
-    span.markup {
+    span.atmentionMarkup {
       visibility: visible;
       color: transparent;
       background: $HIGHLIGHT_COLOR;

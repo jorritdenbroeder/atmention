@@ -36,7 +36,6 @@ function InputController($element, $scope, $timeout, atmention) {
         search: search,
         toggleSuggestions: toggleSuggestions,
         updateMarkup: updateMarkup,
-        updateHighlighter: updateHighlighter,
         updateSuggestions: updateSuggestions,
         updateActiveSuggestionIndex: updateActiveSuggestionIndex,
         updateDebugInfo: updateDebugInfo
@@ -74,10 +73,6 @@ function InputController($element, $scope, $timeout, atmention) {
     if (ctrl.ngModel) {
       ctrl.ngModel.$setViewValue(markup);
     }
-  }
-
-  function updateHighlighter(segments) {
-    ctrl.segments = segments;
   }
 
   function updateSuggestions(suggestions) {

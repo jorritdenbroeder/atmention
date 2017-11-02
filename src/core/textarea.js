@@ -1,6 +1,7 @@
 'use strict';
 
 var textEditor = require('./editor');
+var markupToHtml = require('./markup-to-html');
 
 var KEY = {
   ENTER: 13,
@@ -8,6 +9,9 @@ var KEY = {
   UP: 38,
   DOWN: 40
 };
+
+var DEFAULT_MARKUP_CLASS = 'atmentionMarkup';
+var DEFAULT_CARET_CLASS = 'atmentionCaret';
 
 /**
  * Textarea component with atmention functionality
@@ -22,6 +26,8 @@ module.exports = function (config) {
   var editor;
   var inputElement = config.inputElement;
   var highlighterElement = config.highlighterElement;
+  var markupClass = config.markupClass || DEFAULT_MARKUP_CLASS;
+  var caretClass = config.caretClass || DEFAULT_CARET_CLASS;
   var destroyQueue = [];
   var lastQuery;
   var suggestions = [];
@@ -82,10 +88,11 @@ module.exports = function (config) {
   function onSelectionChanged(evt) {
     editor.handleSelectionChangeEvent(inputElement.selectionStart, inputElement.selectionEnd);
 
-    // Wait until all selection changes have fired
+    // Wait until all selection changes have fired (for IME composition input events, browser fires multiple selection
+    // changes
     numUnappliedSelectionChanges += 1;
 
-    async(function () {
+    setTimeout(function () {
       numUnappliedSelectionChanges -= 1;
 
       if (!numUnappliedSelectionChanges && forcedCaretPositionAfterNextSelectionChanges !== null) {
@@ -94,9 +101,10 @@ module.exports = function (config) {
         forcedCaretPositionAfterNextSelectionChanges = null;
       }
 
+      updateHighlights();
       detectSearchQuery();
       updateDebugInfo();
-    });
+    }, 0);
   }
 
   function onInput(evt) {
@@ -110,11 +118,10 @@ module.exports = function (config) {
     // TODO only needed if a mention was inserted/deleted
     forcedCaretPositionAfterNextSelectionChanges = editor.getSelectionRange().end;
 
-    async(function () {
-      updateDisplay();
-      detectSearchQuery();
-      updateDebugInfo();
-    });
+    updateDisplay();
+    updateHighlights();
+    detectSearchQuery();
+    updateDebugInfo();
   }
 
   function onInputElementScrolled(evt) {
@@ -125,29 +132,29 @@ module.exports = function (config) {
 
   function onKeyDown(evt) {
     // Do nothing when there are no suggestions
-    if (!suggestions || !suggestions.length) {
+    if (!suggestionsVisible || !suggestions || !suggestions.length) {
       return;
     }
 
     switch (evt.keyCode) {
       case KEY.UP: {
         evt.preventDefault();
-        async(function () { moveActiveSuggestionIndex(-1); });
+        moveActiveSuggestionIndex(-1);
         return;
       }
       case KEY.DOWN: {
         evt.preventDefault();
-        async(function () { moveActiveSuggestionIndex(+1); });
+        moveActiveSuggestionIndex(+1);
         return;
       }
       case KEY.ENTER: {
         evt.preventDefault();
-        async(function () { applySuggestion(suggestions[activeSuggestionIndex]); });
+        applySuggestion(suggestions[activeSuggestionIndex]);
         return;
       }
       case KEY.ESCAPE: {
         evt.preventDefault();
-        async(function () { setSuggestionsVisibility(false); });
+        setSuggestionsVisibility(false);
         return;
       }
     }
@@ -158,23 +165,27 @@ module.exports = function (config) {
       return;
     }
     suggestionsVisible = bool;
-    config.hooks.toggleSuggestions(suggestionsVisible);
+
+    async(function () {
+      config.hooks.toggleSuggestions(suggestionsVisible);
+    });
   }
 
   function clearSuggestions() {
     suggestions = [];
     activeSuggestionIndex = -1;
-    config.hooks.updateSuggestions(suggestions);
-    config.hooks.updateActiveSuggestionIndex(activeSuggestionIndex);
+
+    async(function () {
+      config.hooks.updateSuggestions(suggestions);
+      config.hooks.updateActiveSuggestionIndex(activeSuggestionIndex);
+    });
   }
 
   function onBlur() {
     // Using timeout to prevent active suggestion from being reset before we had a chance to handle it.
     // FIXME: solve without using a timeout
     setTimeout(function () {
-      async(function () {
-        setSuggestionsVisibility(false);
-      });
+      setSuggestionsVisibility(false);
     }, 250);
   }
 
@@ -231,9 +242,12 @@ module.exports = function (config) {
     });
 
     activeSuggestionIndex = 0;
-    config.hooks.updateSuggestions(suggestions);
-    config.hooks.updateActiveSuggestionIndex(activeSuggestionIndex);
     setSuggestionsVisibility(true);
+
+    async(function () {
+      config.hooks.updateSuggestions(suggestions);
+      config.hooks.updateActiveSuggestionIndex(activeSuggestionIndex);
+    });
   }
 
   function moveActiveSuggestionIndex(direction) {
@@ -249,13 +263,25 @@ module.exports = function (config) {
 
     activeSuggestionIndex = index;
 
-    config.hooks.updateActiveSuggestionIndex(activeSuggestionIndex);
+    async(function () {
+      config.hooks.updateActiveSuggestionIndex(activeSuggestionIndex);
+    });
   }
 
   function updateDisplay() {
     inputElement.value = editor.getDisplay();
-    config.hooks.updateHighlighter(editor.getSegments());
-    config.hooks.updateMarkup(editor.getMarkup());
+    async(function () {
+      config.hooks.updateMarkup(editor.getMarkup());
+    });
+  }
+
+  function updateHighlights() {
+    highlighterElement.innerHTML = markupToHtml(
+      editor.getSegments(),
+      editor.getSelectionRange().end,
+      markupClass,
+      caretClass
+    );
   }
 
   /**
@@ -270,6 +296,7 @@ module.exports = function (config) {
     editor.insertMarkup(suggestion.searchResult.display, suggestion.searchResult.id, suggestion.queryInfo.start, suggestion.queryInfo.end);
     setSuggestionsVisibility(false);
     updateDisplay();
+    updateHighlights();
     inputElement.focus();
 
     // Force caret position on next selectionchange event
@@ -281,7 +308,10 @@ module.exports = function (config) {
     var debugInfo = [
       'selection: [' + selectionRange.start + ',' + selectionRange.end + ']'
     ].join('; ');
-    config.hooks.updateDebugInfo(debugInfo);
+
+    async(function () {
+      config.hooks.updateDebugInfo(debugInfo);
+    });
   }
 
   return instance;

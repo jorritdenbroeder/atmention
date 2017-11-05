@@ -1,7 +1,8 @@
 'use strict';
 
-var textEditor = require('./editor');
-var markupToHtml = require('./markup-to-html');
+var parse = require('./parse');
+var constants = require('./constants');
+var log = require('./log');
 
 var KEY = {
   ENTER: 13,
@@ -10,25 +11,22 @@ var KEY = {
   DOWN: 40
 };
 
-var DEFAULT_MARKUP_CLASS = 'atmentionMarkup';
-var DEFAULT_CARET_CLASS = 'atmentionCaret';
-
 /**
  * Textarea component with atmention functionality
  *
  * @param config
  * @param config.inputElement textarea for user input
  * @param config.highlighterElement DOM element for highlighting mentions
+ * @param config.options
  * @param config.hooks callbacks fired when the view needs to be updeted
  */
-module.exports = function (config) {
+function controller(config) {
   var instance = {};
-  var editor;
+  var message;
+
   var inputElement = config.inputElement;
   var highlighterElement = config.highlighterElement;
   var suggestionsElement = config.suggestionsElement;
-  var markupClass = config.markupClass || DEFAULT_MARKUP_CLASS;
-  var caretClass = config.caretClass || DEFAULT_CARET_CLASS;
   var destroyQueue = [];
   var lastQuery;
   var suggestions = [];
@@ -45,7 +43,7 @@ module.exports = function (config) {
   init();
 
   function init() {
-    editor = textEditor();
+    message = parse('', config.options);
 
     // Register event listeners
     addListener(document, 'selectionchange', onSelectionChanged);
@@ -82,16 +80,16 @@ module.exports = function (config) {
   }
 
   function setMarkup(markup) {
-    editor.parseMarkup(markup);
+    message.parseMarkup(markup);
     updateDisplay();
     updateHighlights();
   }
 
   function onSelectionChanged(/* evt */) {
-    editor.handleSelectionChangeEvent(inputElement.selectionStart, inputElement.selectionEnd);
+    message.setSelectionRange(inputElement.selectionStart, inputElement.selectionEnd);
 
-    // Wait until all selection changes have fired (for IME composition input events, browser fires multiple selection
-    // changes
+    // Debounce selectionchange events (e.g. after an IME composition input event, Chrome fires multiple selectionchange
+    // events)
     numUnappliedSelectionChanges += 1;
 
     setTimeout(function () {
@@ -110,16 +108,16 @@ module.exports = function (config) {
     }, 0);
   }
 
-  function onInput(evt) {
+  function onInput() {
     var text = inputElement.value;
-    var start = evt.target.selectionStart;
-    var end = evt.target.selectionEnd;
+    var start = inputElement.selectionStart;
+    var end = inputElement.selectionEnd;
 
-    editor.handleInputEvent(text, start, end);
+    message.handleInputEvent(text, start, end);
 
     // Force caret position on next selectionchange event
     // TODO only needed if a mention was inserted/deleted
-    forcedCaretPositionAfterNextSelectionChanges = editor.getSelectionRange().end;
+    forcedCaretPositionAfterNextSelectionChanges = message.getSelectionRange().end;
 
     updateDisplay();
     updateHighlights();
@@ -175,12 +173,12 @@ module.exports = function (config) {
   }
 
   function setSuggestionsCoords() {
-    var caret = highlighterElement.querySelector('.' + caretClass);
-    var coords = caret.getBoundingClientRect();
+    var caretSelector = '.' + constants.HIGHLIGHT_SELECTION_CLASS + '.' + constants.HIGHLIGHT_SELECTION_END_CLASS;
+    var caret = highlighterElement.querySelector(caretSelector);
+    var caretCoords = caret.getBoundingClientRect();
     var inputElmCoords = inputElement.getBoundingClientRect();
-    var verticalOffset = 4;
 
-    suggestionsElement.style.top = coords.bottom + verticalOffset + 'px';
+    suggestionsElement.style.top = caretCoords.bottom + 'px';
     suggestionsElement.style.left = inputElmCoords.left + 'px';
     suggestionsElement.style.width = inputElmCoords.width + 'px';
   }
@@ -196,7 +194,7 @@ module.exports = function (config) {
   }
 
   function onBlur() {
-    // Using timeout to prevent active suggestion from being reset before we had a chance to handle it.
+    // Using timeout to prevent active suggestion from being removed before we could apply it.
     // FIXME: solve without using a timeout
     setTimeout(function () {
       setSuggestionsVisibility(false);
@@ -205,7 +203,7 @@ module.exports = function (config) {
 
   // Scans for new @mention search query right before caret
   function detectSearchQuery() {
-    var queryInfo = editor.detectSearchQuery(inputElement.value, inputElement.selectionStart, inputElement.selectionEnd);
+    var queryInfo = message.detectSearchQuery(inputElement.value, inputElement.selectionStart, inputElement.selectionEnd);
     var query = queryInfo ? queryInfo.query : null;
 
     if (query !== lastQuery) {
@@ -227,9 +225,7 @@ module.exports = function (config) {
 
     config.hooks.search(queryInfo.query).then(function (searchResults) {
       if (!searchResults) {
-        // Explicitly log
-        /* eslint no-console:0 */
-        console.error('[atmention] Search callback must return an array');
+        log.error('[atmention] Search callback must return an array');
         return;
       }
 
@@ -284,38 +280,53 @@ module.exports = function (config) {
   }
 
   function updateDisplay() {
-    inputElement.value = editor.getDisplay();
+    inputElement.value = message.getDisplay();
     async(function () {
-      config.hooks.updateMarkup(editor.getMarkup());
+      config.hooks.updateMarkup(message.getMarkup());
     });
   }
 
   function updateHighlights() {
-    highlighterElement.innerHTML = markupToHtml(
-      editor.getSegments(),
-      editor.getSelectionRange().end,
-      markupClass,
-      caretClass
-    );
+    var html = message.toHTML({
+      selectionRange: message.getSelectionRange(),
+      mentionClass: constants.HIGHLIGHT_MENTION_CLASS,
+      selectionClass: constants.HIGHLIGHT_SELECTION_CLASS,
+      selectionStartClass: constants.HIGHLIGHT_SELECTION_START_CLASS,
+      selectionEndClass: constants.HIGHLIGHT_SELECTION_END_CLASS
+    });
+
+    // Add extra line to match textarea padding
+    html += '\n';
+
+    highlighterElement.innerHTML = html;
   }
 
   /**
    * Inserts a new mention from a suggestion
    *
-   * @param suggestion.queryInfo
-   * @param suggestion.searchResult
-   * @param suggestion.searchResult.display
-   * @param suggestion.searchResult.id
+   * @param suggestion.queryInfo.start
+   * @param suggestion.queryInfo.end
+   * @param suggestion.searchResult.label
+   * @param suggestion.searchResult.value
    */
   function applySuggestion(suggestion) {
-    editor.insertMarkup(suggestion.searchResult.display, suggestion.searchResult.id, suggestion.queryInfo.start, suggestion.queryInfo.end);
+    var searchResult = suggestion.searchResult;
+    var queryInfo = suggestion.queryInfo;
+
+    if (!searchResult || !searchResult.label || !searchResult.value || !('start' in queryInfo) || !('end' in queryInfo)) {
+      log.error('Invalid suggestion');
+      return;
+    }
+
+    message.insertMention(searchResult.label, searchResult.value, queryInfo.start, queryInfo.end);
+
     setSuggestionsVisibility(false);
     updateDisplay();
     updateHighlights();
     inputElement.focus();
 
     // Force caret position on next selectionchange event
-    forcedCaretPositionAfterNextSelectionChanges = editor.getSelectionRange().end;
+    forcedCaretPositionAfterNextSelectionChanges = message.getSelectionRange().end;
   }
 
   function updateDebugInfo() {
@@ -323,7 +334,7 @@ module.exports = function (config) {
       return;
     }
 
-    var selectionRange = editor.getSelectionRange();
+    var selectionRange = message.getSelectionRange();
     var debugInfo = [
       'selection: [' + selectionRange.start + ',' + selectionRange.end + ']'
     ].join('; ');
@@ -334,4 +345,6 @@ module.exports = function (config) {
   }
 
   return instance;
-};
+}
+
+module.exports = controller;

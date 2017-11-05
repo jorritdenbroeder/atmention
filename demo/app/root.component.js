@@ -6,7 +6,7 @@ angular.module('appModule')
     controller: RootController
   });
 
-function RootController($timeout, atmention) {
+function RootController($timeout) {
   var ctrl = this;
 
   var data = [
@@ -28,7 +28,7 @@ function RootController($timeout, atmention) {
     }
   ];
 
-  ctrl.markup = '';
+  ctrl.markup = 'Hi [Wim](WimKeizer)!';
 
   ctrl.search = function (query) {
     return $timeout(function () {
@@ -37,17 +37,12 @@ function RootController($timeout, atmention) {
       })
         .map(function (item) {
           return {
+            suggestion: '<b>' + item.name + '</b>',
             label: item.name,
-            display: item.name,
-            id: item.id
+            value: item.id
           };
         });
     }, 250);
-  };
-
-  ctrl.save = function () {
-    var mentions = atmention.extractMentions(ctrl.markup);
-    console.log(mentions);
   };
 
 }

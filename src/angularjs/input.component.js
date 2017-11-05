@@ -9,6 +9,7 @@ angular.module('atmentionModule')
     controller: InputController,
     bindings: {
       placeholder: '@',
+      mentionTemplate: '@',
       searchHook: '<search'
     }
   });
@@ -16,13 +17,12 @@ angular.module('atmentionModule')
 function InputController($element, $scope, $timeout, $compile, atmention) {
   var ctrl = this;
   var suggestionsElement;
-  var atmentionTextarea;
+  var atmentionController;
 
   ctrl.debugInfo = '';
   ctrl.suggestions = [];
   ctrl.suggestionsVisible = false;
   ctrl.activeSuggestionIndex = -1;
-  ctrl.segments = []; // for highlighter
 
   ctrl.$onInit = $onInit;
   ctrl.$onDestroy = $onDestroy;
@@ -33,10 +33,13 @@ function InputController($element, $scope, $timeout, $compile, atmention) {
     suggestionsElement = $compile(require('./suggestions-overlay.html'))($scope);
     angular.element(document.body).append(suggestionsElement);
 
-    var atmentionConfig = {
+    atmentionController = atmention.controller({
       inputElement: $element.find('textarea')[0],
       highlighterElement: $element.find('atmention-highlighter')[0],
       suggestionsElement: suggestionsElement[0],
+      options: {
+        mentionTemplate: ctrl.mentionTemplate
+      },
       hooks: {
         angularAsync: evalAsync,
         search: search,
@@ -46,21 +49,19 @@ function InputController($element, $scope, $timeout, $compile, atmention) {
         updateActiveSuggestionIndex: updateActiveSuggestionIndex,
         updateDebugInfo: updateDebugInfo
       }
-    };
-
-    atmentionTextarea = atmention.textarea(atmentionConfig);
+    });
 
     // Reload markup whenever the ngModel value changes
     if (ctrl.ngModel) {
       ctrl.ngModel.$formatters.push(function (value) {
-        atmentionTextarea.setMarkup(value);
+        atmentionController.setMarkup(value);
       });
     }
   }
 
   function $onDestroy() {
     angular.element(suggestionsElement).remove();
-    atmentionTextarea.destroy();
+    atmentionController.destroy();
   }
 
   function evalAsync(func) {
@@ -95,7 +96,7 @@ function InputController($element, $scope, $timeout, $compile, atmention) {
   }
 
   function applySuggestion(suggestion) {
-    atmentionTextarea.applySuggestion(suggestion);
+    atmentionController.applySuggestion(suggestion);
   }
 
 }

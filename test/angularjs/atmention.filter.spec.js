@@ -1,6 +1,6 @@
 'use strict';
 
-describe('AngularJS', function () {
+describe('Filter', function () {
 
   var $filter;
 
@@ -11,7 +11,7 @@ describe('AngularJS', function () {
     });
   });
 
-  it('Filter', function () {
+  it('Formats markup as plain text', function () {
     var result = $filter('atmention')('Testing [123](some_id)');
     expect(result).toBe('Testing 123');
   });

@@ -11,5 +11,11 @@ var log = module.exports = {
     if (!log.enabled) { return; }
     /* eslint no-console:0 */
     console.log.apply(console, arguments);
+  },
+
+  error: function () {
+    if (!log.enabled) { return; }
+    /* eslint no-console:0 */
+    console.error.apply(console, arguments);
   }
 };

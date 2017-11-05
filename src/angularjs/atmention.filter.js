@@ -4,14 +4,10 @@ angular.module('atmentionModule')
   .filter('atmention', atmentionFilter);
 
 /**
- * Converts markup to plain text
+ * Formats markup as plain text
  */
 function atmentionFilter(atmention) {
-  return function (markup, editorOptions) {
-
-    return atmention.editor(editorOptions)
-      .parseMarkup(markup)
-      .getDisplay();
-
+  return function (markup, options) {
+    return atmention.parse(markup, options).getDisplay();
   };
 }

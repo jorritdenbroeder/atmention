@@ -9,7 +9,6 @@ atmention-textarea {
 .atmention {
   &InputContainer {
     position: relative;
-    overflow-y: visible;
     border: 1px solid $BORDER_COLOR;
   }
 
@@ -24,7 +23,6 @@ atmention-textarea {
 
   &InputField {
     position: absolute;
-    overflow: hidden;
     bottom: 0;
     top: 0;
     height: 100%;
@@ -36,15 +34,15 @@ atmention-textarea {
 
   &Highlighter {
     display: block;
-
     white-space: pre-wrap;
     word-wrap: break-word;
+    min-height: 3 * 18px; // DEBUG
 
     span {
       visibility: hidden;
     }
 
-    span.atmentionMarkup {
+    span.mention {
       visibility: visible;
       color: transparent;
       background: $HIGHLIGHT_COLOR;

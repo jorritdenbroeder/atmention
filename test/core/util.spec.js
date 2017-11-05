@@ -1,11 +1,10 @@
 'use strict';
 
-var core = require('../src/core');
+var util = require('../../src/core/util');
 
 describe('Util', function () {
 
-  var util = core.util;
-  var mentionRegexTemplate = '[__DISPLAY__](__ID__)';
+  var mentionRegexTemplate = '[__LABEL__](__VALUE__)';
   var mentionRegex = util.regexFromTemplate(mentionRegexTemplate);
 
   it('Creates regex from template', function () {
@@ -15,12 +14,6 @@ describe('Util', function () {
   it('Splices a string', function () {
     var result = util.spliceString('0123456', 3, 4, '-');
     expect(result).toEqual('012-456');
-  });
-
-  it('Creates markup from pattern', function () {
-    var pattern = '[__DISPLAY__](__ID__)';
-    var markup = util.createMarkup(pattern, 'me', 'person:123');
-    expect(markup).toEqual('[me](person:123)');
   });
 
 });

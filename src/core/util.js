@@ -1,5 +1,7 @@
 'use strict';
 
+var constants = require('./constants');
+
 var util = module.exports = {
 
   escapeRegex: function (str) {
@@ -10,11 +12,11 @@ var util = module.exports = {
     var pattern = util.escapeRegex(tpl);
 
     // TODO(?) allow any character except []() and/or make this configurable
-    var allowedDisplayChars = '([a-zA-Z0-9_ :.@]+?)';
-    var allowedIdChars = '([a-zA-Z0-9_ @:.-]+?)';
+    var allowedLabelChars = '([a-zA-Z0-9_ :.@]+?)';
+    var allowedValueChars = '([a-zA-Z0-9_ @:.-]+?)';
 
-    pattern = pattern.replace('__DISPLAY__', allowedDisplayChars); // '(.+?)'
-    pattern = pattern.replace('__ID__', allowedIdChars); // '(.+?)'
+    pattern = pattern.replace(constants.LABEL_TEMPLATE_LITERAL, allowedLabelChars); // '(.+?)'
+    pattern = pattern.replace(constants.VALUE_TEMPLATE_LITERAL, allowedValueChars); // '(.+?)'
     pattern = pattern + (matchAtEnd ? '$' : '');
 
     return new RegExp(pattern, 'g');
@@ -24,10 +26,18 @@ var util = module.exports = {
     return str.substring(0, start) + (insert || '') + str.substring(end);
   },
 
-  createMarkup: function (pattern, display, id) {
-    var markup = pattern;
-    markup = markup.replace('__DISPLAY__', display);
-    markup = markup.replace('__ID__', id);
-    return markup;
+  extend: function (target) {
+    var extended = target || {};
+
+    for (var i = 1; i < arguments.length; i += 1) {
+      for (var key in arguments[i]) {
+        if (arguments[i].hasOwnProperty(key)) {
+          extended[key] = arguments[i][key];
+        }
+      }
+    }
+
+    return extended;
   }
+
 };

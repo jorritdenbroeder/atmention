@@ -26,11 +26,11 @@ module.exports = function (config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      'test/index.js': ['webpack'],
+      'test/index.js': ['webpack', 'sourcemap'],
     },
 
     webpack: {
-      devtool: 'inline-source-map',
+      devtool: 'inline-sourcemap',
       module: {
         rules: [
           {
@@ -54,7 +54,8 @@ module.exports = function (config) {
       'karma-mocha-reporter',
       'karma-phantomjs-launcher',
       'karma-chrome-launcher',
-      'karma-coverage-istanbul-reporter'
+      'karma-coverage-istanbul-reporter',
+      'karma-sourcemap-loader'
     ],
 
 

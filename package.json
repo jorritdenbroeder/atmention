@@ -1,15 +1,16 @@
 {
   "name": "atmention",
   "version": "0.1.0",
-  "description": "",
+  "description": "Textarea with @mention autocomplete",
   "private": true,
+  "main": "./packages/angularjs/index.js",
   "workspaces": [
-    "packages/**"
+    "packages/*"
   ],
   "scripts": {
     "start": "cd demo && webpack-dev-server --config webpack.config.js --progress",
-    "build": "webpack",
-    "test": "karma start packages/core/karma.conf.js --single-run && karma start packages/angularjs/karma.conf.js --single-run",
+    "build": "lerna run build --loglevel=verbose",
+    "test": "lerna run test --loglevel=verbose",
     "coveralls": "cat packages/core/coverage/lcov.info | coveralls"
   },
   "author": "Jorrit den Broeder <jorrit@parksound.nl>",
@@ -38,6 +39,7 @@
     "karma-phantomjs-launcher": "^1.0.4",
     "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^2.0.5",
+    "lerna": "^2.4.0",
     "ng-annotate-webpack-plugin": "^0.2.1-pre",
     "node-sass": "^4.5.3",
     "sass-loader": "^6.0.6",

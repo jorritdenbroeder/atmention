@@ -1,8 +1,12 @@
 {
   "name": "atmention-angularjs",
   "version": "0.1.0",
-  "description": "",
+  "description": "Textarea with @mention autocomplete",
   "main": "index.js",
+  "files": [
+    "dist",
+    "src"
+  ],
   "scripts": {
     "build": "webpack",
     "test": "karma start --single-run"

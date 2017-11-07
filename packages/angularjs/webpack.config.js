@@ -6,15 +6,22 @@ const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const CssoWebpackPlugin = require('csso-webpack-plugin').default;
 
+const pkg = require('./package.json');
+
 module.exports = () => {
+  let entry = {};
+
+  entry[pkg.name] = [
+    './index.js',
+    path.resolve(__dirname, '../styles/index.scss')
+  ];
+
+  entry[pkg.name + '.min'] = [
+    './index.js'
+  ];
+
   return {
-    entry: {
-      'atmention': [
-        './index.js',
-        path.resolve(__dirname, '../styles/index.scss'),
-      ],
-      'atmention.min': './index.js'
-    },
+    entry: entry,
     output: {
       path: path.resolve('./dist'),
       filename: '[name].js'

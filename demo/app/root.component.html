@@ -2,15 +2,17 @@
   placeholder="Type @ to mention someone"
   ng-model="$ctrl.markup"
   mention-template="[__LABEL__](__VALUE__)"
-  search="$ctrl.search"></atmention-textarea>
+  search="$ctrl.search">
+
+  <atmention-no-suggestions-template>
+    Nothing found for &quot;{{ $item.query }}&quot;
+  </atmention-no-suggestions-template>
+
+  <atmention-suggestion-template>
+    {{$item.index}}; {{$item.query}}; {{$item.active}}; {{$item.label}}; {{ $item.value }}
+  </atmention-suggestion-template>
+
+</atmention-textarea>
 
 <!-- Debug info -->
 <textarea style="margin-top: 16px; width: 100%; height: 100px">{{$ctrl.markup}}</textarea>
-
-<!-- <div>
-  Plain text: &quot;{{ $ctrl.markup | atmention }}&quot;
-</div> -->
-
-<h3>HTML</h3>
-<div ng-bind-html="$ctrl.html"></div>
-<div ng-bind="$ctrl.html"></div>

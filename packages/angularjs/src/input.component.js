@@ -1,5 +1,7 @@
 'use strict';
 
+var suggestionsOverlayTemplate = require('./suggestions-overlay.html');
+
 angular.module('atmentionModule')
   .component('atmentionTextarea', {
     require: {
@@ -11,10 +13,14 @@ angular.module('atmentionModule')
       placeholder: '@',
       mentionTemplate: '@',
       searchHook: '<search'
+    },
+    transclude: {
+      noSuggestionsTemplate: '?atmentionNoSuggestionsTemplate',
+      suggestionTemplate: '?atmentionSuggestionTemplate'
     }
   });
 
-function InputController($element, $scope, $timeout, $compile, atmention) {
+function InputController($element, $scope, $timeout, $compile, $transclude, atmention) {
   var ctrl = this;
   var suggestionsElement;
   var atmentionController;
@@ -27,11 +33,11 @@ function InputController($element, $scope, $timeout, $compile, atmention) {
   ctrl.$onInit = $onInit;
   ctrl.$onDestroy = $onDestroy;
   ctrl.applySuggestion = applySuggestion;
+  ctrl.initLocalsForNoSuggestionsTemplate = initLocalsForNoSuggestionsTemplate;
+  ctrl.initLocalsForSuggestionsTemplate = initLocalsForSuggestionsTemplate;
 
   function $onInit() {
-    // Render suggestions overlay in body
-    suggestionsElement = $compile(require('./suggestions-overlay.html'))($scope);
-    angular.element(document.body).append(suggestionsElement);
+    suggestionsElement = compileSuggestionsOverlay();
 
     atmentionController = atmention.controller({
       inputElement: $element.find('textarea')[0],
@@ -60,12 +66,33 @@ function InputController($element, $scope, $timeout, $compile, atmention) {
   }
 
   function $onDestroy() {
-    angular.element(suggestionsElement).remove();
+    suggestionsElement.remove();
     atmentionController.destroy();
   }
 
   function evalAsync(func) {
     $scope.$evalAsync(func);
+  }
+
+  /**
+   * Compile suggestions overlay
+   * - Appended to document.body
+   * - Operates in the same scope as this controller
+   */
+  function compileSuggestionsOverlay() {
+    var linkFunc = $compile(suggestionsOverlayTemplate);
+
+    var linkOptions = {
+      parentBoundTranscludeFn: $transclude
+    };
+
+    var overlayScope = $scope;
+
+    var overlayElement = linkFunc(overlayScope, function (clone) {
+      angular.element(document.body).append(clone);
+    }, linkOptions);
+
+    return overlayElement;
   }
 
   function search(query) {
@@ -97,6 +124,28 @@ function InputController($element, $scope, $timeout, $compile, atmention) {
 
   function applySuggestion(suggestion) {
     atmentionController.applySuggestion(suggestion);
+  }
+
+  function initLocalsForNoSuggestionsTemplate(ngIfScope) {
+    ngIfScope.$item = {
+      query: ctrl.query
+    };
+  }
+
+  function initLocalsForSuggestionsTemplate(ngRepeatScope) {
+    ngRepeatScope.$item = {
+      index: ngRepeatScope.$index,
+      active: ngRepeatScope.$index === ctrl.activeSuggestionIndex,
+      label: ngRepeatScope.suggestion.searchResult.label,
+      value: ngRepeatScope.suggestion.searchResult.value,
+      query: ctrl.query,
+    };
+
+    var unwatch = $scope.$watch('$ctrl.activeSuggestionIndex', function (index) {
+      ngRepeatScope.$item.active = ngRepeatScope.$index === index;
+    });
+
+    ngRepeatScope.$on('$destroy', unwatch);
   }
 
 }

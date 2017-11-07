@@ -12,7 +12,7 @@ describe('Filter', function () {
   });
 
   it('Formats markup as plain text', function () {
-    var result = $filter('atmention')('Testing [123](some_id)');
+    var result = $filter('atmention')('Testing [123](some_id)').getDisplay();
     expect(result).toBe('Testing 123');
   });
 

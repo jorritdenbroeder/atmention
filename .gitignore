@@ -1,5 +1,5 @@
+*.log
 dist
 coverage
 node_modules
 sandbox
-yarn-error.log

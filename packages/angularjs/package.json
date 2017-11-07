@@ -1,6 +1,6 @@
 {
   "name": "atmention-angularjs",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Textarea with @mention autocomplete",
   "main": "index.js",
   "files": [
@@ -14,7 +14,7 @@
   "author": "Jorrit den Broeder <jorrit@parksound.nl>",
   "license": "ISC",
   "dependencies": {
-    "atmention": "0.1.0"
+    "atmention": "^0.2.0"
   },
   "devDependencies": {
     "webpack": "^3.8.1"

@@ -1,6 +1,6 @@
 'use strict';
 
-var parse = require('../../src/core/parse');
+var parse = require('../src/parse');
 
 describe('Format as html', function () {
 

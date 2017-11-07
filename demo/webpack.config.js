@@ -6,7 +6,7 @@ module.exports = () => {
   return {
     entry: {
       app: './index.js',
-      styles: '../src/styles/index.scss'
+      styles: '../packages/styles/index.scss'
     },
     output: {
       filename: '[name].js'

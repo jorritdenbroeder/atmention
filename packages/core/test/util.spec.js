@@ -1,6 +1,6 @@
 'use strict';
 
-var util = require('../../src/core/util');
+var util = require('../src/util');
 
 describe('Util', function () {
 

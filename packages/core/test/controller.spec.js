@@ -1,6 +1,6 @@
 'use strict';
 
-var controller = require('../../src/core/controller');
+var controller = require('../src/controller');
 
 var KEY = {
   ENTER: 13,

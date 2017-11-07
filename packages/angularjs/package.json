@@ -1,0 +1,18 @@
+{
+  "name": "atmention-angularjs",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack",
+    "test": "karma start --single-run"
+  },
+  "author": "Jorrit den Broeder <jorrit@parksound.nl>",
+  "license": "ISC",
+  "dependencies": {
+    "atmention": "0.1.0"
+  },
+  "devDependencies": {
+    "webpack": "^3.8.1"
+  }
+}

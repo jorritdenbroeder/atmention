@@ -2,13 +2,15 @@
   "name": "atmention",
   "version": "0.1.0",
   "description": "",
-  "main": "src/angularjs",
+  "private": true,
+  "workspaces": [
+    "packages/**"
+  ],
   "scripts": {
     "start": "cd demo && webpack-dev-server --config webpack.config.js --progress",
     "build": "webpack",
-    "test": "karma start --single-run",
-    "test-watch": "karma start",
-    "coveralls": "cat coverage/lcov.info | coveralls"
+    "test": "karma start packages/core/karma.conf.js --single-run && karma start packages/angularjs/karma.conf.js --single-run",
+    "coveralls": "cat packages/core/coverage/lcov.info | coveralls"
   },
   "author": "Jorrit den Broeder <jorrit@parksound.nl>",
   "license": "ISC",
@@ -18,7 +20,9 @@
     "angular-sanitize": "1.5.8",
     "coveralls": "^3.0.0",
     "css-loader": "^0.28.7",
+    "csso-webpack-plugin": "^1.0.0-beta.10",
     "eslint": "^4.10.0",
+    "extract-text-webpack-plugin": "^3.0.2",
     "html-loader": "^0.5.1",
     "html-webpack-plugin": "^2.30.1",
     "htmlhint-loader": "^1.3.0",

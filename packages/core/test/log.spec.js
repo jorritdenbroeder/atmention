@@ -1,6 +1,6 @@
 'use strict';
 
-var log = require('../../src/core/log');
+var log = require('../src/log');
 
 describe('Log', function () {
 

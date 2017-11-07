@@ -1,6 +1,6 @@
 'use strict';
 
-var atmention = require('../core');
+var atmention = require('atmention');
 
 angular.module('atmentionModule')
   .provider('atmention', AtmentionProvider);

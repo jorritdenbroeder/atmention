@@ -139,6 +139,7 @@ function InputController($element, $scope, $timeout, $compile, $transclude, atme
       label: ngRepeatScope.suggestion.searchResult.label,
       value: ngRepeatScope.suggestion.searchResult.value,
       query: ctrl.query,
+      data: ngRepeatScope.suggestion.searchResult.data
     };
 
     var unwatch = $scope.$watch('$ctrl.activeSuggestionIndex', function (index) {

@@ -16,3 +16,10 @@
 
 <!-- Debug info -->
 <textarea style="margin-top: 16px; width: 100%; height: 100px">{{$ctrl.markup}}</textarea>
+
+<pre><h3>&lt;atmention-render&gt;</h3></pre>
+<atmention-render markup="$ctrl.markup">
+  <atmention-mention-template>
+    <a href="" ng-click="$ctrl.onMentionClicked($item, $event)">{{$item.label}}</a>
+  </atmention-mention-template>
+</atmention-render>

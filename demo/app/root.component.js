@@ -45,4 +45,8 @@ function RootController($timeout) {
     }, 250);
   };
 
+  ctrl.onMentionClicked = function (mention, $event) {
+    console.log('Clicked', mention, $event);
+  };
+
 }

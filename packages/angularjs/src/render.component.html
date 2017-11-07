@@ -1,0 +1,4 @@
+<span ng-repeat="segment in $ctrl.segments">
+  <span ng-if="!segment.mention" ng-bind-html="::segment.text"></span>
+  <span ng-if="segment.mention" ng-transclude="mentionTemplate" ng-init="$item = segment.mention"></span>
+</span>

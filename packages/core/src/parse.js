@@ -32,6 +32,7 @@ function parse(initialMarkup, options) {
   instance.getSelectionRange = getSelectionRange;
   instance.setSelectionRange = setSelectionRange;
   instance.toHTML = toHTML;
+  instance.splitAtMentions = splitAtMentions;
 
   init();
 
@@ -350,6 +351,10 @@ function parse(initialMarkup, options) {
 
   function toHTML(options) {
     return format.html(instance, options);
+  }
+
+  function splitAtMentions() {
+    return format.splitMarkup(markup, mentions);
   }
 
   return instance;

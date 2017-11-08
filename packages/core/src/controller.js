@@ -62,6 +62,12 @@ function controller(config) {
         inputElement.focus();
       });
     }
+
+    // Fix iOS textarea padding
+    // https://stackoverflow.com/questions/6890149/remove-3-pixels-in-ios-webkit-textarea
+    if (navigator && /iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+      highlighterElement.style.marginLeft = '3px';
+    }
   }
 
   function destroy() {

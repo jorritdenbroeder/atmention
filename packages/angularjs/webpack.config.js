@@ -2,7 +2,6 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ngAnnotatePlugin = require('ng-annotate-webpack-plugin');
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const CssoWebpackPlugin = require('csso-webpack-plugin').default;
 
@@ -52,7 +51,7 @@ module.exports = () => {
     },
     plugins: [
       new ngAnnotatePlugin(),
-      new UglifyJSPlugin({
+      new webpack.optimize.UglifyJsPlugin({
         include: /\.min\.js$/
       }),
       new ExtractTextPlugin('[name].css'),

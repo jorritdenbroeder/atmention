@@ -56,6 +56,12 @@ function controller(config) {
     addListener(inputElement, 'select', onSelectionChanged);
     addListener(inputElement, 'keyup', onSelectionChanged);
     addListener(inputElement, 'mousedown', onSelectionChanged);
+
+    if (config.options.focus) {
+      async(function () {
+        inputElement.focus();
+      });
+    }
   }
 
   function destroy() {

@@ -10,23 +10,68 @@ Textarea with @mention autocomplete
 WORK IN PROGRESS
 
 
-## Installation
+## Installation (AngularJS)
 
-Install dependencies (npm doesn't support workspaces - please use yarn)
+Using npm
 ```
-$ yarn
+$ npm install --save atmention-angularjs
 ```
-From this project's root:
+Or, using yarn
 ```
-$ yarn link
+$ yarn add atmention-angularjs
 ```
-From your app root:
+
+Import the stylesheet:
 ```
-$ yarn link atmention
+import 'node_modules/atmention-angularjs/dist/atmention-angularjs.css'
+```
+
+Register the module to your app (using webpack)
+```
+require('angular');
+require('atmention-angularjs');
+
+angular.module('app', [
+  'atmentionModule'
+]);
+```
+
+## Example usage (AngularJS)
+
+Template
+```
+<atmention-textarea
+  ng-model="$ctrl.markup"
+  placeholder="Use @ to mention someone">
+</atmention-textarea>
+
+<button ng-click="$ctrl.save()">Save</button>
+```
+
+Controller
+```
+function Controller(atmention) {
+  $ctrl.markup = 'Nice groove, [Elvin](elvin@example.com)...'
+
+  $ctrl.save = function () {
+    var instance = atmention.parse($ctrl.markup);
+    // instance.getDisplay(); // 'Nice groove, Elvin...'
+    // instance.getMarkup(); // 'Nice groove, [Elvin](elvin@example.com)...'
+    // instance.getMentions(); // [{ label: 'Elvin', value: 'elvin@example.com' }]
+  };
+}
 ```
 
 
 ## Development
 
-* `npm start`
+Clone this repo, then:
+* `yarn` - Installs dependencies + links workspaces
+* `npm start` - Runs development server
 * Go to http://localhost:8081
+
+To link npm packages locally:
+* `cd <atmention>/packages/angularjs`
+* `npm link`
+* `cd <app>`
+* `npm link atmention-angularjs` - Creates a symlink in &lt;app&gt;/node_modules

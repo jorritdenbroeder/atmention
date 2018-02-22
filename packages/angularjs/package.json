@@ -1,6 +1,6 @@
 {
   "name": "atmention-angularjs",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Textarea with @mention autocomplete",
   "main": "index.js",
   "files": [

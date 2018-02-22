@@ -5,8 +5,8 @@ let HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = () => {
   return {
     entry: {
-      app: './index.js',
-      styles: '../packages/styles/index.scss'
+      app: path.join(__dirname, './index.js'),
+      styles: 'atmention-angularjs/src/styles/index.scss'
     },
     output: {
       filename: '[name].js'

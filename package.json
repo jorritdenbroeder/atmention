@@ -8,10 +8,10 @@
     "packages/*"
   ],
   "scripts": {
-    "start": "cd demo && webpack-dev-server --config webpack.config.js --progress",
-    "build": "lerna run build --loglevel=verbose",
-    "test": "lerna run test --loglevel=verbose",
-    "coveralls": "cat packages/core/coverage/lcov.info | coveralls"
+    "start": "lerna run start --scope atmention-angularjs-demo --stream",
+    "build": "lerna run build --loglevel=verbose --stream",
+    "test": "lerna run test --loglevel=verbose --stream",
+    "coveralls": "cat packages/atmention-core/coverage/lcov.info | coveralls"
   },
   "author": "Jorrit den Broeder <jorrit@parksound.nl>",
   "license": "ISC",

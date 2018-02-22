@@ -1,7 +1,8 @@
 {
-  "name": "atmention",
+  "name": "atmention-core",
   "version": "0.3.1",
   "description": "Textarea with @mention autocomplete",
+  "private": true,
   "main": "index.js",
   "files": [
     "src"

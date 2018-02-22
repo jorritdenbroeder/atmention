@@ -32,7 +32,7 @@ function FormatterController() {
 
     // Replace line breaks with <br/>, so we don't have to use css white-space wrapping
     ctrl.segments.forEach(function (segment) {
-      segment.text = segment.text.replace('\n', '<br/>');
+      segment.text = segment.text.replace(/\n/g, '<br/>');
     });
   }
 }

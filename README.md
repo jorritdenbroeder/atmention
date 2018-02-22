@@ -6,10 +6,6 @@
 
 Textarea with @mention autocomplete
 
-
-WORK IN PROGRESS
-
-
 ## Installation (AngularJS)
 
 Using npm

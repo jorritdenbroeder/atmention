@@ -1,0 +1,18 @@
+{
+  "name": "atmention-angularjs-demo",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "main": "index.js",
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "start": "webpack-dev-server --progress"
+  },
+  "author": "Jorrit den Broeder <jorrit@parksound.nl>",
+  "license": "ISC",
+  "dependencies": {
+    "atmention-angularjs": "^0.3.4"
+  }
+}

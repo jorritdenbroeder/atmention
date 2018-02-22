@@ -1,3 +1,6 @@
+<h1>atmention-angularjs-demo</h1>
+
+<pre><h3>&lt;atmention-textarea&gt;</h3></pre>
 <atmention-textarea
   placeholder="Type @ to mention someone"
   ng-model="$ctrl.markup"
@@ -14,12 +17,12 @@
 
 </atmention-textarea>
 
-<!-- Debug info -->
-<textarea style="margin-top: 16px; width: 100%; height: 100px">{{$ctrl.markup}}</textarea>
-
 <pre><h3>&lt;atmention-render&gt;</h3></pre>
 <atmention-render model="$ctrl.markup | atmention">
   <atmention-mention-template>
     <a href="" ng-click="$ctrl.onMentionClicked($item, $event)">{{$item.label}}</a>
   </atmention-mention-template>
 </atmention-render>
+
+<pre><h3>internal markup:</h3></pre>
+<textarea style="width: 100%; height: 100px">{{$ctrl.markup}}</textarea>

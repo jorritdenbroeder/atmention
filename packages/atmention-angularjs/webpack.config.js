@@ -12,7 +12,7 @@ module.exports = () => {
 
   entry[pkg.name] = [
     './index.js',
-    path.resolve(__dirname, '../styles/index.scss')
+    './src/styles/index.scss'
   ];
 
   entry[pkg.name + '.min'] = [

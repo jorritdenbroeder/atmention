@@ -76,9 +76,6 @@ describe('Controller', function () {
       highlighterElement: highlights,
       suggestionsElement: suggestions,
       hooks: hooks,
-      options: {
-        mentionTemplate: '[__LABEL__](__VALUE__)'
-      }
     });
 
     // Clear textarea

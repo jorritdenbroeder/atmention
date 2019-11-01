@@ -12,10 +12,6 @@ Using npm
 ```
 $ npm install --save atmention-angularjs
 ```
-Or, using yarn
-```
-$ yarn add atmention-angularjs
-```
 
 Import the stylesheet:
 ```
@@ -58,11 +54,10 @@ function Controller(atmention) {
 }
 ```
 
-
 ## Development
 
 Clone this repo, then:
-* `yarn` - Installs dependencies + links workspaces
+* `npm install` - Installs dependencies + links workspaces
 * `npm start` - Runs development server
 * Go to http://localhost:8081
 

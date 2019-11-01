@@ -11,7 +11,6 @@ angular.module('atmentionModule')
     controller: InputController,
     bindings: {
       placeholder: '@',
-      mentionTemplate: '@',
       searchHook: '<search',
       focus: '<'
     },
@@ -21,7 +20,7 @@ angular.module('atmentionModule')
     }
   });
 
-function InputController($element, $scope, $timeout, $compile, $transclude, atmention) {
+function InputController($element, $scope, $compile, $transclude, atmention) {
   var ctrl = this;
   var suggestionsElement;
   var atmentionController;
@@ -45,7 +44,6 @@ function InputController($element, $scope, $timeout, $compile, $transclude, atme
       highlighterElement: $element.find('atmention-highlighter')[0],
       suggestionsElement: suggestionsElement[0],
       options: {
-        mentionTemplate: ctrl.mentionTemplate,
         focus: ctrl.focus
       },
       hooks: {

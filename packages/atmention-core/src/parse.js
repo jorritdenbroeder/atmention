@@ -5,20 +5,16 @@ var util = require('./util');
 var format = require('./format');
 var log = require('./log');
 
-var defaultOptions = {
-  mentionTemplate: '[' + constants.LABEL_TEMPLATE_LITERAL + '](' + constants.VALUE_TEMPLATE_LITERAL + ')'
-};
-
-function parse(initialMarkup, options) {
+function parse(rawMarkup) {
   var instance = {};
-  var opts;
-
   var markup = '';
   var display = '';
   var mentions = [];
   var segments = [];
   var selectionStart = 0;
   var selectionEnd = 0;
+
+  parseMarkup(rawMarkup);
 
   instance.parseMarkup = parseMarkup;
   instance.handleInputEvent = handleInputEvent;
@@ -33,13 +29,6 @@ function parse(initialMarkup, options) {
   instance.setSelectionRange = setSelectionRange;
   instance.toHTML = toHTML;
   instance.splitAtMentions = splitAtMentions;
-
-  init();
-
-  function init() {
-    opts = util.extend({}, defaultOptions, options);
-    parseMarkup(initialMarkup);
-  }
 
   function parseMarkup(value) {
     markup = '';
@@ -63,7 +52,7 @@ function parse(initialMarkup, options) {
 
   function extractMentions() {
     var result = [];
-    var mentionRegex = util.regexFromTemplate(opts.mentionTemplate);
+    var mentionRegex = new RegExp(constants.MENTION_REGEX, 'g');
     var match;
     var matchedMarkup;
     var matchedLabel;
@@ -211,10 +200,8 @@ function parse(initialMarkup, options) {
    * @returns {QueryInfo} Info for inserting a mention later
    */
   function detectSearchQuery(value) {
-    // TODO improve regex + make configurable
-    var mentionRegex = new RegExp('@([A-Za-z0-9_]+)', 'g'); // e.g. matches @user_name
+    var mentionRegex = new RegExp(constants.SEARCH_QUERY_REGEX, 'g');
     var caretPosition = selectionEnd;
-
     var match;
     var matchedText;
     var query;
@@ -299,9 +286,9 @@ function parse(initialMarkup, options) {
     var displayRange;
 
     var mention = {
-      markup: opts.mentionTemplate
-        .replace(constants.LABEL_TEMPLATE_LITERAL, label)
-        .replace(constants.VALUE_TEMPLATE_LITERAL, value),
+      markup: constants.MENTION_FORMATTING_TEMPLATE
+        .replace('LABEL', label)
+        .replace('VALUE', value),
       label: label,
       value: value,
       start: markupRange.start,

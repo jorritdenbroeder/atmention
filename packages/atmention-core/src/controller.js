@@ -17,8 +17,8 @@ var KEY = {
  * @param config
  * @param config.inputElement textarea for user input
  * @param config.highlighterElement DOM element for highlighting mentions
- * @param config.options
  * @param config.hooks callbacks fired when the view needs to be updeted
+ * @param config.options optional
  */
 function controller(config) {
   var instance = {};
@@ -43,7 +43,7 @@ function controller(config) {
   init();
 
   function init() {
-    message = parse('', config.options);
+    message = parse('');
 
     // Register event listeners
     addListener(document, 'selectionchange', onSelectionChanged);
@@ -57,7 +57,7 @@ function controller(config) {
     addListener(inputElement, 'keyup', onSelectionChanged);
     addListener(inputElement, 'mousedown', onSelectionChanged);
 
-    if (config.options.focus) {
+    if (config.options && config.options.focus) {
       async(function () {
         inputElement.focus();
       });

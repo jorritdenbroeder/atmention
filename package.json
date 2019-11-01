@@ -11,7 +11,8 @@
     "start": "lerna run start --scope atmention-angularjs-demo --stream",
     "build": "lerna run build --loglevel=verbose --stream",
     "test": "lerna run test --loglevel=verbose --stream",
-    "coveralls": "cat packages/atmention-core/coverage/lcov.info | coveralls"
+    "coveralls": "cat packages/atmention-core/coverage/lcov.info | coveralls",
+    "link": "lerna link"
   },
   "author": "Jorrit den Broeder <jorrit@parksound.nl>",
   "license": "ISC",

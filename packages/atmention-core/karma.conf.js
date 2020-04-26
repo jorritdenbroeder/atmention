@@ -31,8 +31,13 @@ module.exports = function (config) {
 
     webpack: {
       devtool: 'inline-sourcemap',
+      mode: 'development',
       module: {
         rules: [
+          {
+            test: /\.(js|ts)x?$/,
+            use: 'ts-loader'
+          },
           {
             test: /\.html$/,
             use: 'html-loader'
@@ -52,8 +57,7 @@ module.exports = function (config) {
       'karma-webpack',
       'karma-jasmine',
       'karma-mocha-reporter',
-      'karma-phantomjs-launcher',
-      'karma-chrome-launcher',
+      'karma-jsdom-launcher',
       'karma-coverage-istanbul-reporter',
       'karma-sourcemap-loader'
     ],
@@ -71,9 +75,6 @@ module.exports = function (config) {
       'report-config': {
         html: {
           subdir: 'html'
-        },
-        lcov: {
-          subdir: 'lcov'
         }
       },
       fixWebpackSourcePaths: true
@@ -98,15 +99,8 @@ module.exports = function (config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['PhantomJS'],
-    // browsers: ['Chrome'],
+    browsers: ['jsdom'],
 
-    // https://github.com/karma-runner/karma-phantomjs-launcher/issues/126
-    // on disconnect, makes karma to launch another phantonJs window to restart the testcases
-    browserDisconnectTolerance: 5,
-    browserNoActivityTimeout: 60000,
-    browserDisconnectTimeout: 30000,
-    captureTimeout: 60000,
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits

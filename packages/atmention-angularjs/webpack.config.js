@@ -1,40 +1,43 @@
 const path = require('path');
-const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ngAnnotatePlugin = require('ng-annotate-webpack-plugin');
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
-const CssoWebpackPlugin = require('csso-webpack-plugin').default;
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const pkg = require('./package.json');
 
 module.exports = () => {
-  let entry = {};
-
-  entry[pkg.name] = [
-    './index.js',
-    './src/styles/index.scss'
-  ];
-
-  entry[pkg.name + '.min'] = [
-    './index.js'
-  ];
 
   return {
-    entry: entry,
+
+    devtool: 'source-map',
+
+    mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
+
+    entry: {
+      [pkg.name]: [
+        './index.js',
+        './src/styles/index.scss'
+      ]
+    },
+
     output: {
       path: path.resolve('./dist'),
       filename: '[name].js'
     },
+
     resolve: {
-      extensions: ['.js'],
+      extensions: ['.js', '.ts'],
     },
+
     module: {
       rules: [
         {
-          test: /\.js$/,
-          enforce: 'pre',
+          test: /\.(js|ts)x?$/,
           exclude: /node_modules/,
-          use: 'jshint-loader'
+          use: {
+            loader: 'ts-loader',
+          },
         },
         {
           test: /\.html$/,
@@ -42,20 +45,32 @@ module.exports = () => {
         },
         {
           test: /\.scss$/,
-          use: ExtractTextPlugin.extract({
-            fallback: 'style-loader',
-            use: ['css-loader', 'sass-loader']
-          })
+          use: [
+            MiniCssExtractPlugin.loader,
+            'css-loader',
+            'sass-loader'
+          ],
         }
       ]
     },
+
     plugins: [
+      new CleanWebpackPlugin(),
+
       new ngAnnotatePlugin(),
-      new webpack.optimize.UglifyJsPlugin({
-        include: /\.min\.js$/
+
+      new MiniCssExtractPlugin({
+        filename: '[name].css'
       }),
-      new ExtractTextPlugin('[name].css'),
-      new CssoWebpackPlugin({ pluginOutputPostfix: 'min' })
-    ]
+
+      new CopyWebpackPlugin([
+        {
+          context: 'src/styles',
+          from: '**/*',
+          to: 'scss'
+        },
+      ]),
+    ],
+
   };
 };

@@ -9,10 +9,9 @@ var format = {
   html: function (message, options) {
     var opts = util.extend({}, options);
     var selectionRange = opts.selectionRange ? message.mapRangeToMarkup(opts.selectionRange) : null;
-    var wrapper = document.createElement('div');
+    var html = '';
 
     format.splitMarkup(message.getMarkup(), message.getMentions(), selectionRange).forEach(function (segment) {
-      var span;
       var classNames = [];
 
       // Add classes
@@ -22,14 +21,14 @@ var format = {
       if (segment.isSelectionEnd) { classNames.push(opts.selectionEndClass); }
 
       // Create span
-      span = document.createElement('span');
-      span.innerText = segment.text;
-      if (classNames.length) { span.setAttribute('class', classNames.join(' ')); }
+      const classAttribute = classNames.length
+        ? ` class="${classNames.join(' ')}"`
+        : '';
 
-      wrapper.appendChild(span);
+      html += `<span${classAttribute}>${segment.text}</span>`;
     });
 
-    return wrapper.innerHTML;
+    return html;
   },
 
   /**

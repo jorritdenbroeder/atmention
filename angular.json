@@ -1,0 +1,143 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "projects": {
+    "atmention-angular": {
+      "projectType": "library",
+      "root": "packages/atmention-angular",
+      "sourceRoot": "packages/atmention-angular/src",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "packages/atmention-angular/tsconfig.json",
+            "project": "packages/atmention-angular/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "packages/atmention-angular/tsconfig.prod.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "packages/atmention-angular/test/index.ts",
+            "tsConfig": "packages/atmention-angular/tsconfig.test.json",
+            "karmaConfig": "packages/atmention-angular/karma.conf.js",
+            "sourceMap": false
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "packages/atmention-angular/tsconfig.json",
+              "packages/atmention-angular/tsconfig.test.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "atmention-angular-demo": {
+      "projectType": "application",
+      "schematics": {},
+      "root": "packages/atmention-angular-demo",
+      "sourceRoot": "packages/atmention-angular-demo/src",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "packages/atmention-angular-demo/dist",
+            "index": "packages/atmention-angular-demo/src/index.html",
+            "main": "packages/atmention-angular-demo/src/main.ts",
+            "polyfills": "packages/atmention-angular-demo/src/polyfills.ts",
+            "tsConfig": "packages/atmention-angular-demo/tsconfig.json",
+            "aot": true,
+            "assets": [
+              "packages/atmention-angular-demo/src/assets"
+            ],
+            "styles": [
+              "packages/atmention-angular-demo/src/styles.css"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "packages/atmention-angular-demo/src/environments/environment.ts",
+                  "with": "packages/atmention-angular-demo/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "atmention-angular-demo:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "atmention-angular-demo:build:production"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "sourceMap": false,
+            "main": "packages/atmention-angular-demo/test/index.ts",
+            "polyfills": "packages/atmention-angular-demo/src/polyfills.ts",
+            "tsConfig": "packages/atmention-angular-demo/tsconfig.test.json",
+            "karmaConfig": "packages/atmention-angular-demo/karma.conf.js",
+            "assets": [
+              "packages/atmention-angular-demo/src/assets"
+            ],
+            "styles": [
+              "packages/atmention-angular-demo/src/styles.css"
+            ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "packages/atmention-angular-demo/tsconfig.json",
+              "packages/atmention-angular-demo/tsconfig.test.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "newProjectRoot": "packages",
+  "defaultProject": "atmention-angular-demo"
+}

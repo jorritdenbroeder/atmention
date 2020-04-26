@@ -19,16 +19,16 @@ function RootController($timeout) {
       id: 'menno@example.com'
     },
     {
-      name: 'Gert',
-      id: 'gert@example.com'
+      name: 'Corné',
+      id: 'corne@example.com'
     },
     {
-      name: 'Alex',
-      id: 'alex@example.com'
-    }
+      name: 'D\'Agostino',
+      id: 'dagostino@example.com'
+    },
   ];
 
-  ctrl.markup = 'Hi [Wim](WimKeizer)!';
+  ctrl.markup = 'Hi, [Wim](person:123) and [Alex](person:456)!';
 
   ctrl.search = function (query) {
     return $timeout(function () {

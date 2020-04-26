@@ -7,7 +7,7 @@ angular.module('atmentionModule')
  * Parses markup into an atmention instance
  */
 function atmentionFilter(atmention) {
-  return function (markup, options) {
-    return atmention.parse(markup, options);
+  return function (markup) {
+    return atmention.parse(markup);
   };
 }

@@ -17,7 +17,7 @@
   "author": "Jorrit den Broeder <jorrit@parksound.nl>",
   "license": "ISC",
   "devDependencies": {
-    "angular": "1.5.8",
+    "angular": "1.7.9",
     "angular-mocks": "1.5.8",
     "angular-sanitize": "1.5.8",
     "coveralls": "^3.0.0",

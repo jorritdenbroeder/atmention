@@ -1,7 +1,5 @@
 'use strict';
 
-require('./styles/index.scss');
-
 require('angular');
 require('angular-sanitize');
 require('atmention-angularjs');

@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.angular.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/test",
+    "types": [
+      "jasmine",
+      "node"
+    ]
+  },
+  "include": [
+    "src/**/*",
+    "test/**/*"
+  ]
+}

@@ -17,7 +17,9 @@ TODO...
 <!--</atmention-editor>-->
 
 <pre><h3>&lt;atmention-viewer&gt;</h3></pre>
-<atmention-viewer [model]="markup | atmentionParse"></atmention-viewer>
+<atmention-viewer [model]="markup | atmentionParse">
+  <span>{{$item.label}}</span>
+</atmention-viewer>
 
 <pre><h3>internal markup:</h3></pre>
 <textarea style="width: 100%; height: 100px">{{markup}}</textarea>

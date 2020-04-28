@@ -1,4 +1,4 @@
 <span *ngFor="let segment of segments">
-  <span *ngIf="!segment.mention" ng-bind-html="::segment.text"></span>
+  <span *ngIf="!segment.mention" [innerHTML]="segment.text">{{segment.text}}</span>
   <ng-content *ngIf="segment.mention"></ng-content>
 </span>

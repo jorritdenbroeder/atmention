@@ -7,11 +7,8 @@ import * as atmention from 'atmention-core';
 })
 export class AtmentionParse implements PipeTransform {
 
-  transform(value: unknown, ...args: unknown[]): unknown {
-    return function (markup) {
-      return atmention.parse(markup);
-    };
-
+  transform(markup: string) {
+    return atmention.parse(markup);
   }
 
 }

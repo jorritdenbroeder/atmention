@@ -46,8 +46,8 @@ export class AtmentionEditorComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // suggestionsElement.remove();
-    // atmentionController.destroy();
+    // this.suggestionsElement.remove();
+    this.atmentionController.destroy();
   }
 
   search(query) {
@@ -60,8 +60,8 @@ export class AtmentionEditorComponent implements OnInit, OnDestroy {
   }
 
   updateMarkup(markup) {
-    // if (ctrl.ngModel) {
-    //   ctrl.ngModel.$setViewValue(markup);
+    // if (this.ngModel) {
+    //   this.ngModel.$setViewValue(markup);
     // }
   }
 

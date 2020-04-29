@@ -28,6 +28,8 @@ export class AppComponent {
   public markup = 'Hi, [Wim](person:123) and [Alex](person:456)!';
 
   search(query) {
+    console.log('ON SEARCH', query);
+
     return setTimeout(() => {
       return this.data.filter(function (item) {
         return query === 'all' || item.name.toLowerCase().startsWith(query);

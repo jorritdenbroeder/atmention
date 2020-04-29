@@ -2,13 +2,15 @@ import {Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output} f
 import * as atmention from 'atmention-core';
 
 @Component({
-  selector: 'atmention-editor',
+  selector: 'atmention-editor[model]',
   templateUrl: './atmention-editor.component.html',
   styleUrls: ['./atmention-editor.component.css']
 })
 export class AtmentionEditorComponent implements OnInit, OnDestroy {
+  @Input() model: string;
   @Input() placeholder: string;
   @Input() setFocus = false;
+
   @Output() onSearch = new EventEmitter<any>(); // TODO add correct types
 
 

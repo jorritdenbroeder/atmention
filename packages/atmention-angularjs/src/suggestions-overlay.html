@@ -2,9 +2,10 @@
   <div class="atmentionSuggestionsContainer" ng-if="$ctrl.suggestionsVisible">
 
     <!-- No suggestions -->
-    <div class="atmentionNoResults" ng-if="!$ctrl.suggestions.length"
-      ng-init="$ctrl.initLocalsForNoSuggestionsTemplate(this)"
-      ng-transclude="noSuggestionsTemplate">
+    <div class="atmentionNoResults"
+         ng-if="!$ctrl.suggestions.length"
+         ng-init="$ctrl.initLocalsForNoSuggestionsTemplate(this)"
+         ng-transclude="noSuggestionsTemplate">
 
       <!-- Default content, if no template is provided -->
       <div>No results for &quot;{{ $ctrl.query }}&quot;</div>
@@ -13,12 +14,11 @@
     <!-- Suggestions list -->
     <div class="atmentionSuggestionList" ng-if="$ctrl.suggestions.length">
       <div class="atmentionSuggestionListItem"
-        ng-repeat="suggestion in $ctrl.suggestions"
-        ng-init="$ctrl.initLocalsForSuggestionsTemplate(this)"
-        ng-transclude="suggestionTemplate"
-        ng-class="{ active: $index === $ctrl.activeSuggestionIndex }"
-        ng-click="$ctrl.applySuggestion(suggestion, $event)">
-
+           ng-repeat="suggestion in $ctrl.suggestions"
+           ng-init="$ctrl.initLocalsForSuggestionsTemplate(this)"
+           ng-transclude="suggestionTemplate"
+           ng-class="{ active: $index === $ctrl.activeSuggestionIndex }"
+           ng-click="$ctrl.applySuggestion(suggestion, $event)">
         <!-- Default content, if no template is provided -->
         <div>{{suggestion.searchResult.label}}</div>
 

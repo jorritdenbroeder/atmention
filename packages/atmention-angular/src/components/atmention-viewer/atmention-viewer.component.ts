@@ -1,4 +1,13 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {
+  Component,
+  ContentChild,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+  TemplateRef
+} from '@angular/core';
+
 import {AtmentionModel} from '../../atmention.model';
 
 
@@ -8,6 +17,7 @@ import {AtmentionModel} from '../../atmention.model';
   styleUrls: ['./atmention-viewer.component.css']
 })
 export class AtmentionViewerComponent implements OnInit, OnChanges {
+  @ContentChild(TemplateRef) template: TemplateRef<any>; //TODO: use proper type
   @Input() model: AtmentionModel;
 
   public segments: any[]; // TODO: add proper type
@@ -30,6 +40,8 @@ export class AtmentionViewerComponent implements OnInit, OnChanges {
 
     // Split at mention boundaries
     this.segments = model.splitAtMentions(); //TODO: how can we do this, causing script error!??
+
+    console.debug('SEGMENTS', this.segments);
 
     // Replace line breaks with <br/>, so we don't have to use css white-space wrapping
     this.segments.forEach((segment) => {

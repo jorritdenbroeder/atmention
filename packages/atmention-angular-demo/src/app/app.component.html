@@ -18,7 +18,9 @@ TODO...
 
 <pre><h3>&lt;atmention-viewer&gt;</h3></pre>
 <atmention-viewer [model]="markup | atmentionParse">
-  <span>{{$item.label}}</span>
+  <ng-template let-mention>
+    <span>{{mention.label}}</span>
+  </ng-template>
 </atmention-viewer>
 
 <pre><h3>internal markup:</h3></pre>

@@ -1,10 +1,12 @@
 <h1>atmention-angular-demo</h1>
 
-<pre><h3>&lt;atmention-editor&gt;</h3></pre>
-TODO...
-<!--<atmention-editor placeholder="Type @ to mention someone"-->
-<!--                  ng-model="$ctrl.markup"-->
-<!--                  search="$ctrl.search">-->
+<br>
+
+<h3>&lt;atmention-editor&gt;</h3>
+
+<atmention-editor placeholder="Type @ to mention someone"
+                  [ng-model]="markup"
+                  (onSearch)="search">
 
 <!--  <atmention-no-suggestions-template>-->
 <!--    Nothing found for &quot;{{ $item.query }}&quot;-->
@@ -14,16 +16,20 @@ TODO...
 <!--    {{$item.index}}; {{$item.query}}; {{$item.active}}; {{$item.label}}; {{ $item.value }}-->
 <!--  </atmention-suggestion-template>-->
 
-<!--</atmention-editor>-->
+</atmention-editor>
 
-<pre><h3>&lt;atmention-viewer&gt;</h3></pre>
+<br><br>
+
+<h3>&lt;atmention-viewer&gt;</h3>
 <atmention-viewer [model]="markup | atmentionParse">
   <ng-template let-mention>
-    <span>{{mention.label}}</span>
+    <strong>{{mention.label}}</strong>
   </ng-template>
 </atmention-viewer>
 
-<pre><h3>internal markup:</h3></pre>
-<textarea style="width: 100%; height: 100px">{{markup}}</textarea>
+<br><br>
+
+<h3>internal markup:</h3>
+<textarea style="width: 100%; height: 100px; background-color: #f0f0f0;">{{markup}}</textarea>
 
 

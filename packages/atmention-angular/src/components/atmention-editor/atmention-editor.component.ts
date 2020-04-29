@@ -9,7 +9,7 @@ import * as atmention from 'atmention-core';
 export class AtmentionEditorComponent implements OnInit, OnDestroy {
   @Input() placeholder: string;
   @Input() setFocus = false;
-  @Output() onSearch: EventEmitter<any> = new EventEmitter<any>(); // TODO add correct types
+  @Output() onSearch = new EventEmitter<any>(); // TODO add correct types
 
 
   public query: string;
@@ -29,7 +29,7 @@ export class AtmentionEditorComponent implements OnInit, OnDestroy {
     this.atmentionController = atmention.controller({
       highlighterElement: this.element.nativeElement.children[0],
       inputElement: this.element.nativeElement.children[1],
-      // suggestionsElement: suggestionsElement[0], // TODO
+      // suggestionsElement: this.suggestionsElement[0], // TODO
       options: {
         focus: this.setFocus
       },

@@ -28,10 +28,7 @@ export class AtmentionViewerComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    // TODO warn if model is not an atmention instance
     let model = changes.model && changes.model.currentValue;
-
-    console.debug('MODEL', model);
 
     if (!model) {
       this.segments = [];
@@ -40,8 +37,6 @@ export class AtmentionViewerComponent implements OnInit, OnChanges {
 
     // Split at mention boundaries
     this.segments = model.splitAtMentions(); //TODO: how can we do this, causing script error!??
-
-    console.debug('SEGMENTS', this.segments);
 
     // Replace line breaks with <br/>, so we don't have to use css white-space wrapping
     this.segments.forEach((segment) => {

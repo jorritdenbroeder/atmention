@@ -50,7 +50,6 @@ export class AtmentionEditorComponent implements OnInit, OnDestroy, AfterContent
   private atmentionController: any; // TODO: set proper type
   private suggestionsOverlay: ComponentRef<SuggestionsOverlayComponent>;
   private onChangeHandler?: (value: string) => any;
-  private onTouchedHandler?: () => any;
 
   constructor(
     private element: ElementRef,

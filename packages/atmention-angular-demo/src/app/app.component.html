@@ -4,32 +4,46 @@
 
 <h3>&lt;atmention-editor&gt;</h3>
 
-<atmention-editor placeholder="Type @ to mention someone"
-                  [model]="markup"
-                  (onSearch)="search">
+<form #demoForm="ngForm">
 
-<!--  <atmention-no-suggestions-template>-->
-<!--    Nothing found for &quot;{{ $item.query }}&quot;-->
-<!--  </atmention-no-suggestions-template>-->
+  <atmention-editor placeholder="Type @ to mention someone"
+                    name="message"
+                    [ngModel]="markup"
+                    [search]="search"
+                    [setFocus]="true">
 
-<!--  <atmention-suggestion-template>-->
-<!--    {{$item.index}}; {{$item.query}}; {{$item.active}}; {{$item.label}}; {{ $item.value }}-->
-<!--  </atmention-suggestion-template>-->
+    <ng-template #noSuggestions let-context>
+      Nothing found for &quot;{{ context.query }}&quot;
+    </ng-template>
 
-</atmention-editor>
+    <ng-template #suggestion let-context>
+      {{ context.index }}; {{ context.query }}; {{ context.active }}; {{ context.label }}; {{ context.value }}
+    </ng-template>
 
-<br><br>
+  </atmention-editor>
 
-<h3>&lt;atmention-viewer&gt;</h3>
-<atmention-viewer [model]="markup | atmentionParse">
-  <ng-template let-mention>
-    <strong>{{mention.label}}</strong>
-  </ng-template>
-</atmention-viewer>
+  <br/>
+  
+  <br/>
 
-<br><br>
+  <h3>&lt;atmention-viewer&gt;</h3>
+  <atmention-viewer [model]="markup | atmentionParse">
+    <ng-template let-mention>
+      <strong>{{mention.label}}</strong>
+    </ng-template>
+  </atmention-viewer>
 
-<h3>internal markup:</h3>
-<textarea style="width: 100%; height: 100px; background-color: #f0f0f0;">{{markup}}</textarea>
+  <br><br>
 
+  <h3>internal markup:</h3>
+  <textarea style="width: 100%; height: 100px; background-color: #f0f0f0;">{{demoForm.controls['message']?.value}}</textarea>
 
+</form>
+
+<ng-template #noSuggestionsTemplate>
+  No suggestions
+</ng-template>
+
+<ng-template #suggestionTemplate>
+  Suggestion
+</ng-template>

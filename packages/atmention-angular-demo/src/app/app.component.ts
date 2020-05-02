@@ -6,6 +6,7 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+
   public data = [
     {
       name: 'Wim',
@@ -25,24 +26,23 @@ export class AppComponent {
     },
   ];
 
-  public markup = 'Hi, [Wim](person:123) and [Alex](person:456)!';
+  markup = 'Hi, [Wim](person:123) and [Alex](person:456)!';
 
-  search(query) {
-    console.log('ON SEARCH', query);
-
-    return setTimeout(() => {
-      return this.data.filter(function (item) {
+  search = (query) => {
+    const suggestions = this.data
+      .filter(item => {
         return query === 'all' || item.name.toLowerCase().startsWith(query);
       })
-      .map(function (item) {
+      .map(item => {
         return {
           suggestion: '<b>' + item.name + '</b>',
           label: item.name,
           value: item.id
         };
       });
-    }, 250);
-  };
 
-
+    return new Promise<any>(resolve => {
+      setTimeout(() => resolve(suggestions), 250);
+    });
+  }
 }

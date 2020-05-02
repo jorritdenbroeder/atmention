@@ -1,96 +1,155 @@
-import {Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import * as atmention from 'atmention-core';
 
+import {
+  AfterContentInit,
+  ApplicationRef,
+  Component,
+  ComponentFactoryResolver,
+  ComponentRef,
+  ContentChild,
+  ElementRef,
+  Injector,
+  Input,
+  OnDestroy,
+  OnInit,
+  TemplateRef
+} from '@angular/core';
+import {
+  ControlValueAccessor,
+  NG_VALUE_ACCESSOR
+} from '@angular/forms';
+
+import {
+  NoSuggestionsTemplateLocals,
+  SuggestionsOverlayComponent,
+  SuggestionTemplateLocals
+} from '../suggestions-overlay/suggestions-overlay.component';
+
 @Component({
-  selector: 'atmention-editor[model]',
+  selector: 'atmention-editor',
   templateUrl: './atmention-editor.component.html',
-  styleUrls: ['./atmention-editor.component.css']
+  styleUrls: ['./atmention-editor.component.css'],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: AtmentionEditorComponent,
+      multi: true, // TODO
+    }
+  ]
 })
-export class AtmentionEditorComponent implements OnInit, OnDestroy {
-  @Input() model: string;
+export class AtmentionEditorComponent implements OnInit, OnDestroy, AfterContentInit, ControlValueAccessor {
+
+  @ContentChild('noSuggestions') noSuggestionsTemplate: TemplateRef<NoSuggestionsTemplateLocals>;
+  @ContentChild('suggestion') suggestionTemplate: TemplateRef<SuggestionTemplateLocals>;
+
   @Input() placeholder: string;
+  @Input() isDisabled: boolean;
   @Input() setFocus = false;
+  @Input('search') searchHook: any;
 
-  @Output() onSearch = new EventEmitter<any>(); // TODO add correct types
+  private atmentionController: any; // TODO: set proper type
+  private suggestionsOverlay: ComponentRef<SuggestionsOverlayComponent>;
+  private onChangeHandler?: (value: string) => any;
+  private onTouchedHandler?: () => any;
 
-
-  public query: string;
-  public suggestionsVisible = false;
-  public suggestions: any[]; // TODO: check type
-  public activeSuggestionIndex = -1;
-
-
-  public atmentionController: any; // TODO: set proper type
-  // public suggestionsElement
-
-  constructor(private element: ElementRef) { }
+  constructor(
+    private element: ElementRef,
+    private componentFactoryResolver: ComponentFactoryResolver,
+    private applicationRef: ApplicationRef,
+    private injector: Injector) { }
 
   ngOnInit(): void {
-    // this.suggestionsElement = compileSuggestionsOverlay();
+  }
+
+  ngAfterContentInit() {
+    const suggestionsOverlayElement = this.initSuggestionsOverlay();
 
     this.atmentionController = atmention.controller({
       highlighterElement: this.element.nativeElement.children[0],
       inputElement: this.element.nativeElement.children[1],
-      // suggestionsElement: this.suggestionsElement[0], // TODO
+      suggestionsElement: suggestionsOverlayElement,
       options: {
         focus: this.setFocus
       },
       hooks: {
-        search: null, //TODO: add eventListener in consumer
-        toggleSuggestions: this.toggleSuggestions,
-        updateMarkup: this.updateMarkup,
-        updateSuggestions: this.updateSuggestions,
-        updateActiveSuggestionIndex: this.updateActiveSuggestionIndex,
-        updateDebugInfo: this.updateDebugInfo
+        search: this.search.bind(this),
+        toggleSuggestions: this.toggleSuggestions.bind(this),
+        updateMarkup: this.updateMarkup.bind(this),
+        updateSuggestions: this.updateSuggestions.bind(this),
+        updateActiveSuggestionIndex: this.updateActiveSuggestionIndex.bind(this),
       }
     });
-
   }
 
   ngOnDestroy(): void {
-    // this.suggestionsElement.remove();
+    this.applicationRef.detachView(this.suggestionsOverlay.hostView);
+    this.suggestionsOverlay.destroy();
     this.atmentionController.destroy();
   }
 
-  search(query) {
-    this.query = query;
-    //return ctrl.searchHook(query);
+  /** @implements {ControlValueAccessor} */
+  writeValue(obj: any): void {
+    this.atmentionController.setMarkup(obj || '');
   }
 
-  toggleSuggestions(bool) {
-    this.suggestionsVisible = bool;
+  /** @implements {ControlValueAccessor} */
+  registerOnChange(fn: any): void {
+    this.onChangeHandler = fn;
+  }
+
+  /** @implements {ControlValueAccessor} */
+  registerOnTouched(fn: any): void {
+    // TODO
+  }
+
+  /** @implements {ControlValueAccessor} */
+  setDisabledState?(isDisabled: boolean): void {
+    this.isDisabled = isDisabled;
+  }
+
+  initSuggestionsOverlay() {
+    const ref = this.componentFactoryResolver.resolveComponentFactory(SuggestionsOverlayComponent).create(this.injector);
+
+    ref.instance.noSuggestionsTemplate = this.noSuggestionsTemplate;
+
+    ref.instance.suggestionTemplate = this.suggestionTemplate;
+
+    ref.instance.onSuggestionApplied.subscribe(suggestion => this.applySuggestion(suggestion));
+
+    this.applicationRef.attachView(ref.hostView);
+
+    const element = (ref.location.nativeElement as HTMLElement).children[0];
+
+    document.body.appendChild(element);
+
+    this.suggestionsOverlay = ref;
+
+    return element;
+  }
+
+  search(query) {
+    this.suggestionsOverlay.instance.query = query;
+    return this.searchHook(query);
   }
 
   updateMarkup(markup) {
-    // if (this.ngModel) {
-    //   this.ngModel.$setViewValue(markup);
-    // }
+    this.onChangeHandler && this.onChangeHandler(markup);
+  }
+
+  toggleSuggestions(bool) {
+    this.suggestionsOverlay.instance.isVisible = bool;
   }
 
   updateSuggestions(suggestions) {
-    this.suggestions = suggestions;
+    this.suggestionsOverlay.instance.updateSuggestions(suggestions);
   }
 
   updateActiveSuggestionIndex(index) {
-    this.activeSuggestionIndex = index;
-  }
-
-  updateDebugInfo(text) {
-    //ctrl.debugInfo = text;
+    this.suggestionsOverlay.instance.updateActiveSuggestionIndex(index);
   }
 
   applySuggestion(suggestion) {
-    //atmentionController.applySuggestion(suggestion);
-  }
-
-  initLocalsForNoSuggestionsTemplate(ngIfScope) {
-    // ngIfScope.$item = {
-    //   query: ctrl.query
-    // };
-  }
-
-  initLocalsForSuggestionsTemplate(ngRepeatScope) {
-    // TODO:
+    this.atmentionController.applySuggestion(suggestion);
   }
 
 }

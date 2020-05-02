@@ -1,0 +1,19 @@
+<div class="atmentionSuggestionsOverlay">
+  <div class="atmentionSuggestionsContainer" *ngIf="isVisible">
+
+    <div class="atmentionNoResults" *ngIf="!suggestions.length">
+      <ng-container *ngTemplateOutlet="noSuggestionsTemplate; context: createNoSuggestionsTemplateLocals()"></ng-container>
+    </div>
+
+
+    <div class="atmentionSuggestionList" *ngIf="suggestions.length">
+      <div class="atmentionSuggestionListItem"
+           *ngFor="let suggestion of suggestions; let suggestionIndex = index"
+           [ngClass]="{ active: suggestionIndex === activeSuggestionIndex }"
+           (click)="applySuggestion(suggestion)">
+          <ng-container *ngTemplateOutlet="suggestionTemplate; context: createSuggestionTemplateLocals(suggestionIndex, suggestion)"></ng-container>
+      </div>
+    </div>
+
+  </div>
+</div>

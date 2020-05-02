@@ -3,29 +3,28 @@ import {
   ContentChild,
   Input,
   OnChanges,
-  OnInit,
   SimpleChanges,
   TemplateRef
 } from '@angular/core';
 
-import {AtmentionModel} from '../../atmention.model';
-
+import {
+  AtmentionModel
+} from '../../atmention.model';
 
 @Component({
   selector: 'atmention-viewer[model]',
   templateUrl: './atmention-viewer.component.html',
   styleUrls: ['./atmention-viewer.component.css']
 })
-export class AtmentionViewerComponent implements OnInit, OnChanges {
+export class AtmentionViewerComponent implements OnChanges {
+
   @ContentChild(TemplateRef) template: TemplateRef<any>; //TODO: use proper type
+
   @Input() model: AtmentionModel;
 
   public segments: any[]; // TODO: add proper type
 
   constructor() { }
-
-  ngOnInit(): void {
-  }
 
   ngOnChanges(changes: SimpleChanges): void {
     let model = changes.model && changes.model.currentValue;

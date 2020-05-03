@@ -1,12 +1,9 @@
-'use strict';
-
-var atmention = require('atmention-core');
+import * as angular from 'angular';
+import * as atmention from 'atmention-core';
 
 angular.module('atmentionModule')
-  .provider('atmention', AtmentionProvider);
+  .provider('atmention', ({
+    $get: () => atmention
+  }));
 
-function AtmentionProvider () {
-  this.$get = function () {
-    return atmention;
-  };
-}
+export { };

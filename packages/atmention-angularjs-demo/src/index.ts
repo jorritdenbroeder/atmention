@@ -1,9 +1,5 @@
-'use strict';
-
-require('angular');
-require('angular-sanitize');
-require('atmention-angularjs');
-require('./app/app.module');
-require('./app/root.component');
+import * as angular from 'angular';
+import './app/app.module';
+import './app/root.component';
 
 angular.bootstrap(document, ['appModule']);

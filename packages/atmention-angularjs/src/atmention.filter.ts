@@ -1,4 +1,4 @@
-'use strict';
+import * as angular from 'angular';
 
 angular.module('atmentionModule')
   .filter('atmention', atmentionFilter);
@@ -11,3 +11,5 @@ function atmentionFilter(atmention) {
     return atmention.parse(markup);
   };
 }
+
+export { };

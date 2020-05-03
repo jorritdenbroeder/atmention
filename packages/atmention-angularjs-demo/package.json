@@ -5,10 +5,11 @@
   "license": "ISC",
   "private": true,
   "scripts": {
-    "build": "webpack --progress",
+    "build": "cross-env NODE_ENV=production webpack",
     "start": "webpack-dev-server --progress"
   },
   "dependencies": {
+    "angular": "^1.7.9",
     "atmention-angularjs": "^0.4.0"
   }
 }

@@ -2,7 +2,8 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "declaration": false,
-    "lib": ["DOM"]
+    "lib": ["DOM"],
+    "allowJs": true,
   },
   "include": [
     "src/**/*"

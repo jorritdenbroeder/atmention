@@ -12,7 +12,6 @@
     "sourceMap": true,
     "allowSyntheticDefaultImports": true,
     "preserveConstEnums": true,
-    "allowJs": true,
     "baseUrl": ".",
     "paths": {
       "atmention-core": ["packages/atmention-core/src/index.js"],

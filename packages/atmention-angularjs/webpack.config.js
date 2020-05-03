@@ -3,6 +3,7 @@ const ngAnnotatePlugin = require('ng-annotate-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 const pkg = require('./package.json');
 
@@ -28,7 +29,14 @@ module.exports = () => {
 
     resolve: {
       extensions: ['.js', '.ts'],
+      plugins: [
+        new TsconfigPathsPlugin(),
+      ]
     },
+
+    externals: [
+      'atmention-core',
+    ],
 
     module: {
       rules: [

@@ -1,7 +1,6 @@
 {
-  "extends": "../../tsconfig.angular.json",
+  "extends": "../../tsconfig.angular-library.json",
   "compilerOptions": {
-    "outDir": "./out-tsc/test",
     "types": [
       "jasmine",
       "node"

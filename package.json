@@ -7,7 +7,7 @@
 	"license": "ISC",
 	"scripts": {
 		"bootstrap": "lerna bootstrap",
-		"build": "lerna run build --stream && run-s build:angular build:angular-demo",
+		"build": "run-s build:*",
 		"test": "run-s test:*",
 		"coveralls": "cat packages/atmention-core/coverage/lcov.info | coveralls",
 		"build:core": "lerna run build --scope atmention-core --stream",

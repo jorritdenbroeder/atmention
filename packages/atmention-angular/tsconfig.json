@@ -1,20 +1,5 @@
 {
-  "extends": "../../tsconfig.angular.json",
-  "compilerOptions": {
-    "outDir": "./out-tsc/src",
-    "target": "es2015",
-    "declaration": true,
-    "inlineSources": true,
-    "lib": [
-      "dom",
-      "es2018"
-    ]
-  },
-  "angularCompilerOptions": {
-    "skipTemplateCodegen": true,
-    "strictMetadataEmit": true,
-    "enableResourceInlining": true
-  },
+  "extends": "../../tsconfig.angular-library.json",
   "include": [
     "src/**/*"
   ]

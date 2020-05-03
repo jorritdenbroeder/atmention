@@ -1,24 +1,24 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { AtmentionInput } from '../../src/components/atmention-input.component';
+import { AtmentionEditorComponent } from '../../src/components/atmention-editor/atmention-editor.component';
 
-describe('AtmentionInput', () => {
+describe('AtmentionEditorComponent', () => {
 
-  let component: AtmentionInput;
+  let component: AtmentionEditorComponent;
 
-  let fixture: ComponentFixture<AtmentionInput>;
+  let fixture: ComponentFixture<AtmentionEditorComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule(
       {
         declarations: [
-          AtmentionInput
+          AtmentionEditorComponent
         ]
       })
       .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AtmentionInput);
+    fixture = TestBed.createComponent(AtmentionEditorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

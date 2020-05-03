@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "outDir": "./out-tsc",
     "target": "ES5",
     "module": "CommonJS",
     "moduleResolution": "Node",

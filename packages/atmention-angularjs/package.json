@@ -11,6 +11,9 @@
   "scripts": {
     "build": "webpack"
   },
+  "peerDependencies": {
+    "angular": "^1.7.9"
+  },
   "dependencies": {
     "atmention-core": "^0.4.0"
   }

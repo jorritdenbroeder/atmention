@@ -1,6 +1,4 @@
-'use strict';
-
-module.exports = {
+export default {
 
   // formats a mention instance as plain text by replacing LABEL and VALUE
   MENTION_FORMATTING_TEMPLATE: '[LABEL](VALUE)',

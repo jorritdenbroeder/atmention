@@ -1,6 +1,4 @@
-'use strict';
-
-var log = require('../src/log');
+import log from '../src/log';
 
 describe('Log', function () {
 

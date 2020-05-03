@@ -1,6 +1,7 @@
-'use strict';
+import controller from './controller';
+import parse from './parse';
 
-module.exports = {
-  controller: require('./controller'),
-  parse: require('./parse')
+export {
+  controller, 
+  parse
 };

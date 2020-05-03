@@ -1,8 +1,6 @@
-'use strict';
-
-var parse = require('./parse');
-var constants = require('./constants');
-var log = require('./log');
+import parse from './parse';
+import constants from './constants';
+import log from './log';
 
 var KEY = {
   ENTER: 13,
@@ -21,7 +19,7 @@ var KEY = {
  * @param config.options optional
  */
 function controller(config) {
-  var instance = {};
+  var instance: any = {};
   var message;
 
   var inputElement = config.inputElement;
@@ -359,4 +357,4 @@ function controller(config) {
   return instance;
 }
 
-module.exports = controller;
+export default controller;

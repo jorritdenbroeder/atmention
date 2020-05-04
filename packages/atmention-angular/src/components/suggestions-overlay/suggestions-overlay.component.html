@@ -5,7 +5,6 @@
       <ng-container *ngTemplateOutlet="noSuggestionsTemplate; context: createNoSuggestionsTemplateLocals()"></ng-container>
     </div>
 
-
     <div class="atmentionSuggestionList" *ngIf="suggestions.length">
       <div class="atmentionSuggestionListItem"
            *ngFor="let suggestion of suggestions; let suggestionIndex = index"

@@ -12,18 +12,16 @@ import {
   Input,
   OnDestroy,
   OnInit,
-  TemplateRef
+  TemplateRef, ViewEncapsulation,
 } from '@angular/core';
-import {
-  ControlValueAccessor,
-  NG_VALUE_ACCESSOR
-} from '@angular/forms';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
 import {
   NoSuggestionsTemplateLocals,
   SuggestionsOverlayComponent,
   SuggestionTemplateLocals
 } from '../suggestions-overlay/suggestions-overlay.component';
+
 
 @Component({
   selector: 'atmention-editor',
@@ -35,7 +33,8 @@ import {
       useExisting: AtmentionEditorComponent,
       multi: true, // TODO
     }
-  ]
+  ],
+  encapsulation: ViewEncapsulation.None
 })
 export class AtmentionEditorComponent implements OnInit, OnDestroy, AfterContentInit, ControlValueAccessor {
 
@@ -64,8 +63,8 @@ export class AtmentionEditorComponent implements OnInit, OnDestroy, AfterContent
     const suggestionsOverlayElement = this.initSuggestionsOverlay();
 
     this.atmentionController = atmention.controller({
-      highlighterElement: this.element.nativeElement.children[0],
-      inputElement: this.element.nativeElement.children[1],
+      highlighterElement: this.element.nativeElement.firstChild.firstChild,
+      inputElement: this.element.nativeElement.firstChild.lastChild,
       suggestionsElement: suggestionsOverlayElement,
       options: {
         focus: this.setFocus

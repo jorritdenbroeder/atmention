@@ -1,5 +1,4 @@
-:host {
-  display: block;
+.atmentionEditorContainer {
   position: relative;
   border: 1px solid #aaa;
 }
@@ -34,7 +33,7 @@
   visibility: hidden;
 }
 
-.atmentionHighlighter .mention {
+.atmentionHighlighter span.mention {
   visibility: visible;
   color: transparent;
   background: #ccc;

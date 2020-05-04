@@ -1,12 +1,10 @@
-'use strict';
-
-var constants = require('./constants');
-var util = require('./util');
-var format = require('./format');
-var log = require('./log');
+import constants from './constants';
+import util from './util';
+import format from './format';
+import log from './log';
 
 function parse(rawMarkup) {
-  var instance = {};
+  var instance: any = {};
   var markup = '';
   var display = '';
   var mentions = [];
@@ -347,4 +345,4 @@ function parse(rawMarkup) {
   return instance;
 }
 
-module.exports = parse;
+export default parse;

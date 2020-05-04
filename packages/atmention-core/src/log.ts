@@ -1,6 +1,4 @@
-'use strict';
-
-var log = module.exports = {
+var log: any = {
   log: function (/* arguments */) {
     if (!log.enabled) { return; }
     /* eslint no-console:0 */
@@ -19,3 +17,5 @@ var log = module.exports = {
     console.error.apply(console, arguments);
   }
 };
+
+export default log;

@@ -1,6 +1,4 @@
-'use strict';
-
-var util = require('./util');
+import util from './util';
 
 var format = {
   /**
@@ -36,7 +34,7 @@ var format = {
    *
    * @param selectionRange Range in markup (!)
    */
-  splitMarkup: function (markup, mentions, selectionRange) {
+  splitMarkup: function (markup, mentions, selectionRange?) {
     var segments = [];
     var isSelectionCollapsed = selectionRange ? selectionRange.start === selectionRange.end : false;
     var panic = 0;
@@ -138,4 +136,4 @@ function intersects(startA, endA, startB, endB) {
   return !((endB <= startA) || (startB >= endA));
 }
 
-module.exports = format;
+export default format;

@@ -1,6 +1,4 @@
-'use strict';
-
-var controller = require('../src/controller');
+import controller from '../src/controller';
 
 var KEY = {
   ENTER: 13,
@@ -27,7 +25,7 @@ function fakePromise(results) {
   };
 }
 
-function dispatchEvent(elm, eventType, props) {
+function dispatchEvent(elm, eventType, props?) {
   var evt = new Event(eventType);
   for (var key in props) {
     evt[key] = props[key];

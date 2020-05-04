@@ -4,12 +4,16 @@
   "author": "Jorrit den Broeder <jorrit@parksound.nl>",
   "license": "ISC",
   "main": "dist/atmention-angularjs.js",
+  "types": "dist/types/index.d.ts",
   "files": [
     "dist",
     "src"
   ],
   "scripts": {
-    "build": "webpack"
+    "build": "cross-env NODE_ENV=production webpack"
+  },
+  "peerDependencies": {
+    "angular": "^1.7.9"
   },
   "dependencies": {
     "atmention-core": "^0.4.0"

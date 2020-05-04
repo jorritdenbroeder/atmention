@@ -1,4 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { AtmentionModule } from '../../src/atmention.module';
 import { AtmentionEditorComponent } from '../../src/components/atmention-editor/atmention-editor.component';
 
 describe('AtmentionEditorComponent', () => {
@@ -10,6 +11,9 @@ describe('AtmentionEditorComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule(
       {
+        imports: [
+          AtmentionModule,
+        ],
         declarations: [
           AtmentionEditorComponent
         ]

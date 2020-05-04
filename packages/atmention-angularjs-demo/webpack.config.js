@@ -1,8 +1,9 @@
-let path = require('path');
-let webpack = require('webpack');
-let CleanWebpackPlugin = require('clean-webpack-plugin').CleanWebpackPlugin;
-let HtmlWebpackPlugin = require('html-webpack-plugin');
-let TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+const path = require('path');
+const webpack = require('webpack');
+const CleanWebpackPlugin = require('clean-webpack-plugin').CleanWebpackPlugin;
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+const ngAnnotatePlugin = require('ng-annotate-webpack-plugin');
 
 module.exports = () => {
 
@@ -13,7 +14,7 @@ module.exports = () => {
     mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
 
     entry: {
-      app: path.join(__dirname, 'src/index.js'),
+      app: path.join(__dirname, 'src/index.ts'),
       styles: path.join(__dirname, 'src/index.scss'),
     },
 
@@ -56,6 +57,8 @@ module.exports = () => {
       new CleanWebpackPlugin(),
       
       new webpack.HotModuleReplacementPlugin(),
+
+      new ngAnnotatePlugin(),
 
       new HtmlWebpackPlugin({
         filename: 'index.html',

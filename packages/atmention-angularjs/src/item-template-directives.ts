@@ -1,4 +1,4 @@
-'use strict';
+import * as angular from 'angular';
 
 angular.module('atmentionModule')
   .directive('atmentionNoSuggestionsTemplate', itemTemplateDirective)
@@ -16,3 +16,5 @@ function itemTemplateDirective() {
     }
   };
 }
+
+export { };

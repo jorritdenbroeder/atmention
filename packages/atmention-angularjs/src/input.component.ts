@@ -1,5 +1,4 @@
-'use strict';
-
+import * as angular from 'angular';
 var suggestionsOverlayTemplate = require('./suggestions-overlay.html');
 
 angular.module('atmentionModule')
@@ -150,3 +149,5 @@ function InputController($element, $scope, $compile, $transclude, atmention) {
   }
 
 }
+
+export { };

@@ -1,4 +1,4 @@
-'use strict';
+import * as angular from 'angular';
 
 angular.module('atmentionModule')
   .component('atmentionRender', {
@@ -36,3 +36,5 @@ function FormatterController() {
     });
   }
 }
+
+export { };

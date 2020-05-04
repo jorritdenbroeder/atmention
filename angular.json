@@ -51,7 +51,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "packages/atmention-angular-demo/dist",
+            "outputPath": "dist/atmention-angular-demo",
             "index": "packages/atmention-angular-demo/src/index.html",
             "main": "packages/atmention-angular-demo/src/main.ts",
             "polyfills": "packages/atmention-angular-demo/src/polyfills.ts",

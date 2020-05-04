@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.angular.base.json",
+  "compilerOptions": {
+    "baseUrl": "."
+  },
+  "angularCompilerOptions": {
+    "enableIvy": false
+  }
+}

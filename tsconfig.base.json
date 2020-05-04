@@ -1,22 +1,16 @@
 {
   "compilerOptions": {
+    "outDir": "./out-tsc",
     "target": "ES5",
     "module": "CommonJS",
     "moduleResolution": "Node",
     "lib": [
       "ES5"
     ],
-    "strict": true,
+    "strict": false,
     "declaration": true,
     "sourceMap": true,
     "allowSyntheticDefaultImports": true,
-    "preserveConstEnums": true,
-    "allowJs": true,
-    "baseUrl": ".",
-    "paths": {
-      "atmention-core": ["packaes/atmention-core/src/index.js"],
-      "atmention-angular": ["packages/atmention-angular/src/index.ts"],
-      "atmention-angularjs": ["packages/atmention-angularjs/src/index.js"],
-    }
+    "preserveConstEnums": true
   }
 }

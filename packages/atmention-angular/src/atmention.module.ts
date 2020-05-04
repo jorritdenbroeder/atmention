@@ -1,14 +1,26 @@
+import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { AtmentionInput } from './components/atmention-input.component';
+import { FormsModule } from '@angular/forms';
+import { AtmentionEditorComponent } from './components/atmention-editor/atmention-editor.component';
+import { AtmentionViewerComponent } from './components/atmention-viewer/atmention-viewer.component';
+import { SuggestionsOverlayComponent } from './components/suggestions-overlay/suggestions-overlay.component';
+import { AtmentionParse } from './pipes/atmention.pipe';
 
 @NgModule({
   declarations: [
-    AtmentionInput
+    AtmentionViewerComponent,
+    AtmentionEditorComponent,
+    SuggestionsOverlayComponent,
+    AtmentionParse,
   ],
   imports: [
+    CommonModule,
+    FormsModule
   ],
   exports: [
-    AtmentionInput
+    AtmentionViewerComponent,
+    AtmentionEditorComponent,
+    AtmentionParse,
   ]
 })
 export class AtmentionModule { }

@@ -1,29 +1,11 @@
 {
-  "compileOnSave": false,
+  "extends": "./tsconfig.angular.base.json",
   "compilerOptions": {
-    "outDir": "./dist/out-tsc",
-    "sourceMap": true,
-    "declaration": false,
-    "downlevelIteration": true,
-    "experimentalDecorators": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "importHelpers": true,
-    "target": "es2015",
-    "lib": [
-      "es2018",
-      "dom"
-    ],
-    "allowJs": true,
     "baseUrl": ".",
     "paths": {
-      "atmention-core": ["packaes/atmention-core/src/index.js"],
+      "atmention-core": ["packages/atmention-core/src/index.js"],
       "atmention-angular": ["packages/atmention-angular/src/index.ts"],
       "atmention-angularjs": ["packages/atmention-angularjs/src/index.js"],
     }
-  },
-  "angularCompilerOptions": {
-    "fullTemplateTypeCheck": true,
-    "strictInjectionParameters": true
   }
 }

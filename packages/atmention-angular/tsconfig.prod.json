@@ -1,6 +1,6 @@
 {
-  "extends": "./tsconfig.json",
-  "angularCompilerOptions": {
-    "enableIvy": false
-  }
+  "extends": "../../tsconfig.angular-library.prod.json",
+  "include": [
+    "src/**/*"
+  ]
 }

@@ -3,8 +3,13 @@ const ngAnnotatePlugin = require('ng-annotate-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 const pkg = require('./package.json');
+
+const tsconfig = process.env.NODE_ENV === 'production'
+  ? path.resolve(__dirname, './tsconfig.prod.json')
+  : path.resolve(__dirname, './tsconfig.json');
 
 module.exports = () => {
 
@@ -16,7 +21,7 @@ module.exports = () => {
 
     entry: {
       [pkg.name]: [
-        './index.js',
+        './src/index.ts',
         './src/styles/index.scss'
       ]
     },
@@ -28,7 +33,17 @@ module.exports = () => {
 
     resolve: {
       extensions: ['.js', '.ts'],
+      plugins: [
+        new TsconfigPathsPlugin({
+          configFile: tsconfig
+        }),
+      ]
     },
+
+    externals: [
+      'angular',
+      'atmention-core',
+    ],
 
     module: {
       rules: [
@@ -37,6 +52,9 @@ module.exports = () => {
           exclude: /node_modules/,
           use: {
             loader: 'ts-loader',
+            options: {
+              configFile: tsconfig
+            }
           },
         },
         {

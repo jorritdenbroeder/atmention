@@ -48,7 +48,7 @@ jobs:
       run: npm run build
 
     - name: Publish to npm
-      if: github.ref == 'refs/heads/master' && github.event_name == 'release' && github.event.action == 'created'
+      if: github.event_name == 'release' && github.event.action == 'created'
       run: |
         npm publish packages/atmention-core
         npm publish dist/atmention-angular

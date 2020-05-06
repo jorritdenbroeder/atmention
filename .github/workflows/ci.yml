@@ -39,7 +39,7 @@ jobs:
         npm ci
         npm run bootstrap
       env:
-        NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
     - name: Test
       run: npm run test
@@ -52,6 +52,6 @@ jobs:
       run: |
         npm publish packages/atmention-core
         npm publish dist/atmention-angular
-        npm publish dist/atmention-angularjs
+        npm publish packages/atmention-angularjs
       env:
-        NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

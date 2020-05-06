@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "outDir": "./out-tsc",
+    "target": "ES5",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "lib": [
+      "ES5"
+    ],
+    "strict": false,
+    "declaration": true,
+    "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
+    "preserveConstEnums": true
+  }
+}

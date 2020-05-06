@@ -1,0 +1,40 @@
+.atmentionEditorContainer {
+  position: relative;
+  border: 1px solid #aaa;
+}
+
+.atmentionEditorField,
+.atmentionHighlighter {
+  margin: 0;
+  padding: 8px; /* TODO */
+  font-family: inherit;
+  font-size: inherit;
+  border: none;
+}
+
+.atmentionEditorField {
+  position: absolute;
+  bottom: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  background: transparent;
+  resize: none;
+}
+
+.atmentionHighlighter {
+  display: block;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  min-height: 54px; /** (3 * 18px); **/
+}
+
+.atmentionHighlighter span {
+  visibility: hidden;
+}
+
+.atmentionHighlighter span.mention {
+  visibility: visible;
+  color: transparent;
+  background: #ccc;
+}

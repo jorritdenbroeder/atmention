@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.angular.json",
+  "compilerOptions": {
+    "declaration": true,
+    "inlineSources": true,
+  },
+  "angularCompilerOptions": {
+    "skipTemplateCodegen": true,
+    "strictMetadataEmit": true,
+    "enableResourceInlining": true
+  }
+}

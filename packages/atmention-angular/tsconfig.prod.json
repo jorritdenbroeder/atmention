@@ -1,0 +1,6 @@
+{
+  "extends": "../../tsconfig.angular-library.prod.json",
+  "include": [
+    "src/**/*"
+  ]
+}

@@ -1,20 +1,21 @@
 {
   "name": "atmention-angularjs",
-  "version": "0.4.0",
-  "description": "Textarea with @mention autocomplete",
-  "main": "index.js",
-  "files": [
-    "dist",
-    "src",
-    "CHANGELOG.md"
-  ],
-  "scripts": {
-    "build": "webpack",
-    "test": "karma start --single-run"
-  },
+  "version": "0.5.0",
   "author": "Jorrit den Broeder <jorrit@parksound.nl>",
   "license": "ISC",
+  "main": "dist/atmention-angularjs.js",
+  "types": "dist/types/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "cross-env NODE_ENV=production webpack"
+  },
+  "peerDependencies": {
+    "angular": "^1.7.9"
+  },
   "dependencies": {
-    "atmention-core": "^0.4.0"
+    "atmention-core": "^0.5.0"
   }
 }

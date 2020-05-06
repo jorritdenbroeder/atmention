@@ -1,0 +1,41 @@
+<h1>atmention-angular-demo</h1>
+
+<br/>
+
+<h3>&lt;atmention-editor&gt;</h3>
+
+<form #demoForm="ngForm">
+
+  <atmention-editor placeholder="Type @ to mention someone"
+                    name="message"
+                    [(ngModel)]="markup"
+                    [search]="search"
+                    [setFocus]="true">
+
+    <ng-template #noSuggestions let-context>
+      Nothing found for &quot;{{ context.query }}&quot;
+    </ng-template>
+
+    <ng-template #suggestion let-context>
+      {{ context.index }}; {{ context.query }}; {{ context.active }}; {{ context.label }}; {{ context.value }}
+    </ng-template>
+
+  </atmention-editor>
+
+  <br/>
+  <br/>
+
+  <h3>&lt;atmention-viewer&gt;</h3>
+  <atmention-viewer [model]="markup | atmentionParse">
+    <ng-template let-mention>
+      <strong>{{mention.label}}</strong>
+    </ng-template>
+  </atmention-viewer>
+
+  <br/>
+  <br/>
+
+  <h3>internal markup:</h3>
+  <textarea style="width: 100%; height: 100px; background-color: #f0f0f0;">{{markup}}</textarea>
+
+</form>

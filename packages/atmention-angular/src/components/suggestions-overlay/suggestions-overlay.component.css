@@ -1,0 +1,39 @@
+.atmentionSuggestionsOverlay {
+  display: block;
+  position: fixed;
+}
+
+.atmentionSuggestionsContainer {
+  display: block;
+  overflow: auto;
+
+  max-height: 96px; /* 4 x 24 */
+  border: 1px solid #aaa;
+  background: white;
+}
+
+.atmentionNoResults {
+}
+
+.atmentionSuggestionList {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+.atmentionSuggestionListItem {
+  white-space: nowrap;
+  /* Vertical center */
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.atmentionSuggestionListItem.active,
+.atmentionSuggestionListItem.active:hover {
+  background: #ccc;
+}
+
+.atmentionSuggestionListItem:hover {
+  background: #eee;
+  cursor: pointer;
+}

@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "atmention-core": ["packages/atmention-core/src/index.ts"],
+      "atmention-angular": ["packages/atmention-angular/src/index.ts"],
+      "atmention-angularjs": ["packages/atmention-angularjs/src/index.ts"],
+    }
+  }
+}

@@ -1,0 +1,4 @@
+<span *ngFor="let segment of segments">
+  <span *ngIf="!segment.mention" [innerHTML]="segment.text"></span>
+  <ng-template *ngIf="segment.mention" #mention [ngTemplateOutlet]="template" [ngTemplateOutletContext]="{$implicit: segment.mention}"></ng-template>
+</span>

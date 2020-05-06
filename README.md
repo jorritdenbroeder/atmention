@@ -1,8 +1,7 @@
 # Atmention
 
-[![Build Status](https://travis-ci.org/jorritdenbroeder/atmention.svg?branch=master)](https://travis-ci.org/jorritdenbroeder/atmention)
-[![Coverage Status](https://coveralls.io/repos/github/jorritdenbroeder/atmention/badge.svg?branch=master)](https://coveralls.io/github/jorritdenbroeder/atmention?branch=master)
-[![npm version](https://badge.fury.io/js/atmention.svg)](https://badge.fury.io/js/atmention)
+![CI](https://github.com/jorritdenbroeder/atmention/workflows/CI/badge.svg?branch=master)
+[![npm version](https://badge.fury.io/js/atmention-angular.svg)](https://badge.fury.io/js/atmention-angular-core)
 
 ## Getting started (AngularJS)
 

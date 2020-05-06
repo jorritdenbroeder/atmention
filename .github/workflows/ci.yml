@@ -35,7 +35,9 @@ jobs:
           ${{ runner.OS }}-
 
     - name: Install dependencies
-      run: npm ci
+      run: |
+        npm ci
+        npm run bootstrap
       env:
         NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 

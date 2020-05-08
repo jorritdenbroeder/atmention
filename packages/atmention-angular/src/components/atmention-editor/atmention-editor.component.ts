@@ -18,9 +18,9 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
 import {
   NoSuggestionsTemplateLocals,
-  SuggestionsOverlayComponent,
+  AtmentionSuggestionsOverlayComponent,
   SuggestionTemplateLocals
-} from '../suggestions-overlay/suggestions-overlay.component';
+} from '../suggestions-overlay/atmention-suggestions-overlay.component';
 
 
 @Component({
@@ -47,7 +47,7 @@ export class AtmentionEditorComponent implements OnInit, OnDestroy, AfterContent
   @Input('search') searchHook: any;
 
   private atmentionController: any; // TODO: set proper type
-  private suggestionsOverlay: ComponentRef<SuggestionsOverlayComponent>;
+  private suggestionsOverlay: ComponentRef<AtmentionSuggestionsOverlayComponent>;
   private onChangeHandler?: (value: string) => any;
 
   constructor(
@@ -106,7 +106,7 @@ export class AtmentionEditorComponent implements OnInit, OnDestroy, AfterContent
   }
 
   initSuggestionsOverlay() {
-    const ref = this.componentFactoryResolver.resolveComponentFactory(SuggestionsOverlayComponent).create(this.injector);
+    const ref = this.componentFactoryResolver.resolveComponentFactory(AtmentionSuggestionsOverlayComponent).create(this.injector);
 
     ref.instance.noSuggestionsTemplate = this.noSuggestionsTemplate;
 

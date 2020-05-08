@@ -24,10 +24,10 @@ export interface SuggestionTemplateLocals {
 };
 
 @Component({
-  templateUrl: './suggestions-overlay.component.html',
-  styleUrls: ['./suggestions-overlay.component.css'],
+  templateUrl: './atmention-suggestions-overlay.component.html',
+  styleUrls: ['./atmention-suggestions-overlay.component.css'],
 })
-export class SuggestionsOverlayComponent {
+export class AtmentionSuggestionsOverlayComponent {
 
   onSuggestionApplied = new EventEmitter<Suggestion>();
 

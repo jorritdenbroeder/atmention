@@ -17,6 +17,9 @@ import { AtmentionParse } from './pipes/atmention.pipe';
     CommonModule,
     FormsModule
   ],
+  entryComponents: [
+    SuggestionsOverlayComponent,
+  ],
   exports: [
     AtmentionViewerComponent,
     AtmentionEditorComponent,

@@ -1,9 +1,9 @@
 {
   "name": "atmention-angular",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "module": "dist/fesm5/atmention-angular.js",
   "typings": "dist/index.d.ts",
   "dependencies": {
-    "atmention-core": "^0.5.0"
+    "atmention-core": "^0.5.1"
   }
 }

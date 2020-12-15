@@ -48,6 +48,7 @@ export class AtmentionEditorComponent implements OnInit, OnDestroy, AfterContent
 
   private atmentionController: any; // TODO: set proper type
   private suggestionsOverlay: ComponentRef<SuggestionsOverlayComponent>;
+  private suggestionsOverlayElement: Element;
   private onChangeHandler?: (value: string) => any;
 
   constructor(
@@ -60,12 +61,12 @@ export class AtmentionEditorComponent implements OnInit, OnDestroy, AfterContent
   }
 
   ngAfterContentInit() {
-    const suggestionsOverlayElement = this.initSuggestionsOverlay();
+    this.initSuggestionsOverlay();
 
     this.atmentionController = atmention.controller({
       highlighterElement: this.element.nativeElement.firstChild.firstChild,
       inputElement: this.element.nativeElement.firstChild.lastChild,
-      suggestionsElement: suggestionsOverlayElement,
+      suggestionsElement: this.suggestionsOverlayElement,
       options: {
         focus: this.setFocus
       },
@@ -80,6 +81,10 @@ export class AtmentionEditorComponent implements OnInit, OnDestroy, AfterContent
   }
 
   ngOnDestroy(): void {
+    if (this.suggestionsOverlayElement) { 
+      document.body.removeChild(this.suggestionsOverlayElement);
+    }
+
     this.applicationRef.detachView(this.suggestionsOverlay.hostView);
     this.suggestionsOverlay.destroy();
     this.atmentionController.destroy();
@@ -106,6 +111,8 @@ export class AtmentionEditorComponent implements OnInit, OnDestroy, AfterContent
   }
 
   initSuggestionsOverlay() {
+    if (this.suggestionsOverlayElement) { return; }
+
     const ref = this.componentFactoryResolver.resolveComponentFactory(SuggestionsOverlayComponent).create(this.injector);
 
     ref.instance.noSuggestionsTemplate = this.noSuggestionsTemplate;
@@ -116,13 +123,11 @@ export class AtmentionEditorComponent implements OnInit, OnDestroy, AfterContent
 
     this.applicationRef.attachView(ref.hostView);
 
-    const element = (ref.location.nativeElement as HTMLElement).children[0];
-
-    document.body.appendChild(element);
-
     this.suggestionsOverlay = ref;
 
-    return element;
+    this.suggestionsOverlayElement = (ref.location.nativeElement as HTMLElement).children[0];
+
+    document.body.appendChild(this.suggestionsOverlayElement);
   }
 
   search(query) {

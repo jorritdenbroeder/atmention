@@ -1,6 +1,6 @@
 {
   "name": "atmention-angularjs",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "author": "Jorrit den Broeder <jorrit@parksound.nl>",
   "license": "ISC",
   "main": "dist/atmention-angularjs.js",
@@ -16,6 +16,6 @@
     "angular": "^1.7.9"
   },
   "dependencies": {
-    "atmention-core": "^0.5.1"
+    "atmention-core": "^0.5.2"
   }
 }

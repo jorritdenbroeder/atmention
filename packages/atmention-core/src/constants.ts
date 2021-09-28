@@ -12,7 +12,7 @@ export default {
     '([^)\n]+)' +
     '\\]' +
     '\\(' +
-    '([^\\]\n]+)' +
+    '([^\\]\)\n]+)' +
     '\\)',
 
   // determines when to show the suggestions overlay

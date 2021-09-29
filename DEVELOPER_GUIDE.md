@@ -21,5 +21,7 @@
 ## Bumping version
 
 ```
+npx lerna version major --force-publish --no-git-tag-version --no-push
 npx lerna version minor --force-publish --no-git-tag-version --no-push
+npx lerna version patch --force-publish --no-git-tag-version --no-push
 ```

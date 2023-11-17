@@ -11,7 +11,6 @@ function parse(rawMarkup) {
   var segments = [];
   var selectionStart = 0;
   var selectionEnd = 0;
-  var keepNewValue = false;
 
   parseMarkup(rawMarkup);
 
@@ -148,8 +147,11 @@ function parse(rawMarkup) {
           deleteEnd = Math.max(selectionEnd, deleteStart - delta);
         } else if (delta === 0 && oldDisplay !== value) {
           // If there is a change in value and delta has not changed it could be the Apple OS changing a charecter to one with an accent, 
-          // In this case keep the new value. 
-          keepNewValue = true;
+          // In this case delete the old character and replace it with the new one. 
+          insertEnd = end;
+          insertStart = insertEnd - 1;
+          deleteStart = end - 1;
+          deleteEnd = insertEnd;
         } else {
           // Insert
           insertEnd = end;
@@ -175,11 +177,7 @@ function parse(rawMarkup) {
 
     rangeInMarkup = mapRangeToMarkup(rangeInDisplay);
 
-    if (keepNewValue) {
-      newMarkupValue = util.spliceString('', rangeInMarkup.start, rangeInMarkup.end, value);
-    } else {
-      newMarkupValue = util.spliceString(oldMarkup, rangeInMarkup.start, rangeInMarkup.end, insertedText);
-    }
+    newMarkupValue = util.spliceString(oldMarkup, rangeInMarkup.start, rangeInMarkup.end, insertedText);
 
     // Update display value, in case mentions were deleted
     parseMarkup(newMarkupValue);

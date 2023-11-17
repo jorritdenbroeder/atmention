@@ -1,6 +1,6 @@
 {
   "name": "atmention-angularjs-demo",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "author": "Jorrit den Broeder <jorrit@parksound.nl>",
   "license": "ISC",
   "private": true,
@@ -10,6 +10,6 @@
   },
   "dependencies": {
     "angular": "^1.7.9",
-    "atmention-angularjs": "^0.5.2"
+    "atmention-angularjs": "^0.5.3"
   }
 }

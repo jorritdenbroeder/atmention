@@ -11,6 +11,7 @@ function parse(rawMarkup) {
   var segments = [];
   var selectionStart = 0;
   var selectionEnd = 0;
+  var keepNewValue = false;
 
   parseMarkup(rawMarkup);
 
@@ -145,6 +146,10 @@ function parse(rawMarkup) {
           insertEnd = -1;
           deleteStart = Math.min(selectionStart, end);
           deleteEnd = Math.max(selectionEnd, deleteStart - delta);
+        } else if (delta === 0 && oldDisplay !== value) {
+          // If there is a change in value and delta has not changed it could be the Apple OS changing a charecter to one with an accent, 
+          // In this case keep the new value. 
+          keepNewValue = true;
         } else {
           // Insert
           insertEnd = end;
@@ -170,9 +175,7 @@ function parse(rawMarkup) {
 
     rangeInMarkup = mapRangeToMarkup(rangeInDisplay);
 
-    // If there is a change in value and delta has not changed it could be the Apple OS changing a charecter to one with an accent, 
-    // In this case keep the new value. 
-    if (delta === 0 && oldDisplay !== value) {
+    if (keepNewValue) {
       newMarkupValue = util.spliceString('', rangeInMarkup.start, rangeInMarkup.end, value);
     } else {
       newMarkupValue = util.spliceString(oldMarkup, rangeInMarkup.start, rangeInMarkup.end, insertedText);

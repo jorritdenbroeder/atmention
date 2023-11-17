@@ -169,7 +169,14 @@ function parse(rawMarkup) {
     }
 
     rangeInMarkup = mapRangeToMarkup(rangeInDisplay);
-    newMarkupValue = util.spliceString(oldMarkup, rangeInMarkup.start, rangeInMarkup.end, insertedText);
+
+    // If there is a change in value and delta has not changed it could be the Apple OS changing a charecter to one with an accent, 
+    // In this case keep the new value. 
+    if (delta === 0 && oldDisplay !== value) {
+      newMarkupValue = util.spliceString('', rangeInMarkup.start, rangeInMarkup.end, value);
+    } else {
+      newMarkupValue = util.spliceString(oldMarkup, rangeInMarkup.start, rangeInMarkup.end, insertedText);
+    }
 
     // Update display value, in case mentions were deleted
     parseMarkup(newMarkupValue);

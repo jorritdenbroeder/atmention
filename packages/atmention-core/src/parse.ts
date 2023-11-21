@@ -145,6 +145,13 @@ function parse(rawMarkup) {
           insertEnd = -1;
           deleteStart = Math.min(selectionStart, end);
           deleteEnd = Math.max(selectionEnd, deleteStart - delta);
+        } else if (delta === 0 && oldDisplay !== value) {
+          // If there is a change in value and delta has not changed it could be the Apple OS changing a charecter to one with an accent, 
+          // In this case delete the old character and replace it with the new one. 
+          insertEnd = end;
+          insertStart = insertEnd - 1;
+          deleteStart = end - 1;
+          deleteEnd = insertEnd;
         } else {
           // Insert
           insertEnd = end;
@@ -169,6 +176,7 @@ function parse(rawMarkup) {
     }
 
     rangeInMarkup = mapRangeToMarkup(rangeInDisplay);
+
     newMarkupValue = util.spliceString(oldMarkup, rangeInMarkup.start, rangeInMarkup.end, insertedText);
 
     // Update display value, in case mentions were deleted
